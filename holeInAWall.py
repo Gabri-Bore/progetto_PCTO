@@ -22,8 +22,7 @@ BLUE = (0, 0, 255)
 
 # Sfondo
 auto = pygame.image.load(os.path.join('images', 'sfondo.png'))
-auto=pygame.transform.scale(auto,(1280, 720))
-
+auto = pygame.transform.scale(auto, (WIDTH, HEIGHT))
 
 # Inizializza la finestra
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
@@ -35,7 +34,6 @@ clock = pygame.time.Clock()
 # Mediapipe Pose Detection
 mp_pose = mp.solutions.pose
 pose = mp_pose.Pose(min_detection_confidence=0.5, min_tracking_confidence=0.5)
-mp_drawing = mp.solutions.drawing_utils
 
 # Funzione per generare una sagoma casuale
 def generate_pose():
@@ -48,10 +46,7 @@ def generate_pose():
     }
 
 def draw_silhouette(screen, pose):
-    
-   #Disegna una sagoma vuota basata sui punti della posa.
-
-    # Estrai i punti della posa
+    # Disegna una sagoma vuota basata sui punti della posa.
     left_hand = pose["left_hand"]
     right_hand = pose["right_hand"]
     left_foot = pose["left_foot"]
@@ -60,24 +55,20 @@ def draw_silhouette(screen, pose):
 
     # Crea il contorno come una lista di punti ordinati
     contour_points = [
-        left_hand,   # Mano sinistra
-        head,        # Testa
-        right_hand,  # Mano destra
-        right_foot,  # Piede destro
-        left_foot    # Piede sinistro
+        left_hand,
+        head,
+        right_hand,
+        right_foot,
+        left_foot
     ]
 
     # Disegna il poligono chiuso riempito di nero
     pygame.draw.polygon(screen, BLACK, contour_points)
-
-    # (Opzionale) Disegna il bordo del contorno in bLU per evidenziare i limiti
     pygame.draw.polygon(screen, BLUE, contour_points, width=2)
 
-# Funzione per calcolare la distanza tra due punti
 def calculate_distance(p1, p2):
     return np.sqrt((p1[0] - p2[0])**2 + (p1[1] - p2[1])**2)
 
-# Funzione per calcolare il punteggio
 def calculate_score(player_pose, target_pose):
     score = 0
     for key in target_pose:
@@ -88,8 +79,8 @@ def calculate_score(player_pose, target_pose):
 
 # Genera una sagoma iniziale
 target_pose = generate_pose()
-# Disegna la sagoma
-draw_silhouette(screen, target_pose)  
+difficulty_timer = 5000  # 5 secondi per aumentare la difficoltà
+time_elapsed = 0
 
 # Stato del gioco
 game_running = True
@@ -97,22 +88,8 @@ score = 0
 
 # Inizializza la videocamera
 cap = cv2.VideoCapture(0)
-
-# Definizione delle connessioni per la sagoma
-connections = [
-    (mp_pose.PoseLandmark.LEFT_WRIST, mp_pose.PoseLandmark.LEFT_ELBOW),
-    (mp_pose.PoseLandmark.LEFT_ELBOW, mp_pose.PoseLandmark.LEFT_SHOULDER),
-    (mp_pose.PoseLandmark.RIGHT_WRIST, mp_pose.PoseLandmark.RIGHT_ELBOW),
-    (mp_pose.PoseLandmark.RIGHT_ELBOW, mp_pose.PoseLandmark.RIGHT_SHOULDER),
-    (mp_pose.PoseLandmark.LEFT_SHOULDER, mp_pose.PoseLandmark.RIGHT_SHOULDER),
-    (mp_pose.PoseLandmark.LEFT_SHOULDER, mp_pose.PoseLandmark.LEFT_HIP),
-    (mp_pose.PoseLandmark.RIGHT_SHOULDER, mp_pose.PoseLandmark.RIGHT_HIP),
-    (mp_pose.PoseLandmark.LEFT_HIP, mp_pose.PoseLandmark.RIGHT_HIP),
-    (mp_pose.PoseLandmark.LEFT_HIP, mp_pose.PoseLandmark.LEFT_KNEE),
-    (mp_pose.PoseLandmark.LEFT_KNEE, mp_pose.PoseLandmark.LEFT_ANKLE),
-    (mp_pose.PoseLandmark.RIGHT_HIP, mp_pose.PoseLandmark.RIGHT_KNEE),
-    (mp_pose.PoseLandmark.RIGHT_KNEE, mp_pose.PoseLandmark.RIGHT_ANKLE)
-]
+ret, frame = cap.read()
+FRAME_HEIGHT, FRAME_WIDTH = frame.shape[:2]
 
 while True:
     for event in pygame.event.get():
@@ -139,7 +116,6 @@ while True:
     player_pose = {}
     if results.pose_landmarks:
         landmarks = results.pose_landmarks.landmark
-        height, width, _ = frame.shape
 
         # Mappa i punti chiave (esempio: mani, piedi, testa)
         player_pose = {
@@ -159,8 +135,14 @@ while True:
     if player_pose:
         score = calculate_score(player_pose, target_pose)
 
+    # Incrementa il timer per aumentare la difficoltà
+    time_elapsed += clock.get_time()
+    if time_elapsed > difficulty_timer:
+        target_pose = generate_pose()
+        time_elapsed = 0
+
     # Disegna sullo schermo
-    screen.fill(BLACK)
+    screen.blit(auto, (0, 0))  # Mostra lo sfondo
 
     # Disegna la sagoma target
     for key, pos in target_pose.items():
@@ -168,22 +150,12 @@ while True:
 
     # Disegna la sagoma del giocatore
     if results.pose_landmarks:
-        for connection in connections:
-            start = results.pose_landmarks.landmark[connection[0]]
-            end = results.pose_landmarks.landmark[connection[1]]
-
-            start_pos = (int(start.x * WIDTH), int(start.y * HEIGHT))
-            end_pos = (int(end.x * WIDTH), int(end.y * HEIGHT))
-
-            pygame.draw.line(screen, BLUE, start_pos, end_pos, 3)
-
-    # Disegna la posizione del giocatore
-    for key, pos in player_pose.items():
-        pygame.draw.circle(screen, GREEN, pos, 10)
+        for landmark in player_pose.values():
+            pygame.draw.circle(screen, GREEN, landmark, 10)
 
     # Mostra il punteggio
     font = pygame.font.Font(None, 36)
-    score_text = font.render(f"Score: {score}", True, RED)
+    score_text = font.render(f"Punteggio: {score}", True, RED)
     screen.blit(score_text, (10, 10))
 
     # Aggiorna lo schermo
