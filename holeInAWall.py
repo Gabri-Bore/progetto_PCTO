@@ -17,6 +17,10 @@ GREEN = (0, 255, 0)
 RED = (255, 0, 0)
 BLUE = (0, 0, 255)
 
+# Carica l'immagine di sfondo (modifica il percorso per la tua immagine)
+background_image = pygame.image.load("images\ultimate.xcf")
+background_image = pygame.transform.scale(background_image, (WIDTH, HEIGHT))  # Scala l'immagine alle dimensioni della finestra
+
 # Inizializza la finestra
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("Hole in the Wall - Body Tracking")
@@ -153,6 +157,9 @@ while True:
 
     # Disegna sullo schermo
     screen.fill(BLACK)
+
+    # Disegna l'immagine di sfondo
+    screen.blit(background_image, (0, 0))
 
     # Disegna la sagoma target
     for key, pos in target_pose.items():
