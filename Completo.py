@@ -8,7 +8,7 @@ import numpy as np
 pygame.init()
 
 # Dimensioni della finestra
-WIDTH, HEIGHT = 800, 600
+WIDTH, HEIGHT = 1280, 720
 
 # Colori
 BLACK = (0, 0, 0)
@@ -39,6 +39,32 @@ def generate_pose():
         "head": (random.randint(300, 500), random.randint(50, 150))
     }
 
+def draw_silhouette(screen, pose):
+    """
+    Disegna una sagoma vuota basata sui punti della posa.
+    """
+    # Estrai i punti della posa
+    left_hand = pose["left_hand"]
+    right_hand = pose["right_hand"]
+    left_foot = pose["left_foot"]
+    right_foot = pose["right_foot"]
+    head = pose["head"]
+
+    # Crea il contorno come una lista di punti ordinati
+    contour_points = [
+        left_hand,   # Mano sinistra
+        head,        # Testa
+        right_hand,  # Mano destra
+        right_foot,  # Piede destro
+        left_foot    # Piede sinistro
+    ]
+
+    # Disegna il poligono chiuso riempito di nero
+    pygame.draw.polygon(screen, BLACK, contour_points)
+
+    # (Opzionale) Disegna il bordo del contorno in bianco per evidenziare i limiti
+    pygame.draw.polygon(screen, WHITE, contour_points, width=2)
+
 # Funzione per calcolare la distanza tra due punti
 def calculate_distance(p1, p2):
     return np.sqrt((p1[0] - p2[0])**2 + (p1[1] - p2[1])**2)
@@ -54,6 +80,8 @@ def calculate_score(player_pose, target_pose):
 
 # Genera una sagoma iniziale
 target_pose = generate_pose()
+# Disegna la sagoma
+draw_silhouette(screen, target_pose)  
 
 # Stato del gioco
 game_running = True
