@@ -18,7 +18,7 @@ RED = (255, 0, 0)
 BLUE = (0, 0, 255)
 
 # Carica l'immagine di sfondo (modifica il percorso per la tua immagine)
-background_image = pygame.image.load("images\ultimate.xcf")
+background_image = pygame.image.load("images\\ultimate.xcf")
 background_image = pygame.transform.scale(background_image, (WIDTH, HEIGHT))  # Scala l'immagine alle dimensioni della finestra
 
 # Inizializza la finestra
