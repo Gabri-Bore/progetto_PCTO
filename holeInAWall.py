@@ -1,8 +1,11 @@
+import os
 import pygame
+import sys
 import cv2
 import mediapipe as mp
 import random
 import numpy as np
+from pygame.locals import *
 
 # Inizializza Pygame
 pygame.init()
@@ -17,9 +20,14 @@ GREEN = (0, 255, 0)
 RED = (255, 0, 0)
 BLUE = (0, 0, 255)
 
+# Sfondo
+auto = pygame.image.load(os.path.join('images', 'sfondo.png'))
+auto=pygame.transform.scale(auto,(1280, 720))
+
+
 # Inizializza la finestra
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
-pygame.display.set_caption("Hole in the Wall - Body Tracking")
+pygame.display.set_caption("Hole in the Wall")
 
 # Clock per il framerate
 clock = pygame.time.Clock()
@@ -40,9 +48,9 @@ def generate_pose():
     }
 
 def draw_silhouette(screen, pose):
-    """
-    Disegna una sagoma vuota basata sui punti della posa.
-    """
+    
+   #Disegna una sagoma vuota basata sui punti della posa.
+
     # Estrai i punti della posa
     left_hand = pose["left_hand"]
     right_hand = pose["right_hand"]
@@ -62,8 +70,8 @@ def draw_silhouette(screen, pose):
     # Disegna il poligono chiuso riempito di nero
     pygame.draw.polygon(screen, BLACK, contour_points)
 
-    # (Opzionale) Disegna il bordo del contorno in bianco per evidenziare i limiti
-    pygame.draw.polygon(screen, WHITE, contour_points, width=2)
+    # (Opzionale) Disegna il bordo del contorno in bLU per evidenziare i limiti
+    pygame.draw.polygon(screen, BLUE, contour_points, width=2)
 
 # Funzione per calcolare la distanza tra due punti
 def calculate_distance(p1, p2):
