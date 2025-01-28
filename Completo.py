@@ -15,7 +15,9 @@ BLACK = (0, 0, 0)
 WHITE = (255, 255, 255)
 GREEN = (0, 255, 0)
 RED = (255, 0, 0)
-BLUE = (0, 0, 255)
+
+image = pygame.image.load("sfondo.png")
+image = pygame.transform.scale(image, (1280, 720)) 
 
 # Inizializza la finestra
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
@@ -90,22 +92,6 @@ score = 0
 # Inizializza la videocamera
 cap = cv2.VideoCapture(0)
 
-# Definizione delle connessioni per la sagoma
-connections = [
-    (mp_pose.PoseLandmark.LEFT_WRIST, mp_pose.PoseLandmark.LEFT_ELBOW),
-    (mp_pose.PoseLandmark.LEFT_ELBOW, mp_pose.PoseLandmark.LEFT_SHOULDER),
-    (mp_pose.PoseLandmark.RIGHT_WRIST, mp_pose.PoseLandmark.RIGHT_ELBOW),
-    (mp_pose.PoseLandmark.RIGHT_ELBOW, mp_pose.PoseLandmark.RIGHT_SHOULDER),
-    (mp_pose.PoseLandmark.LEFT_SHOULDER, mp_pose.PoseLandmark.RIGHT_SHOULDER),
-    (mp_pose.PoseLandmark.LEFT_SHOULDER, mp_pose.PoseLandmark.LEFT_HIP),
-    (mp_pose.PoseLandmark.RIGHT_SHOULDER, mp_pose.PoseLandmark.RIGHT_HIP),
-    (mp_pose.PoseLandmark.LEFT_HIP, mp_pose.PoseLandmark.RIGHT_HIP),
-    (mp_pose.PoseLandmark.LEFT_HIP, mp_pose.PoseLandmark.LEFT_KNEE),
-    (mp_pose.PoseLandmark.LEFT_KNEE, mp_pose.PoseLandmark.LEFT_ANKLE),
-    (mp_pose.PoseLandmark.RIGHT_HIP, mp_pose.PoseLandmark.RIGHT_KNEE),
-    (mp_pose.PoseLandmark.RIGHT_KNEE, mp_pose.PoseLandmark.RIGHT_ANKLE)
-]
-
 while True:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -157,17 +143,6 @@ while True:
     # Disegna la sagoma target
     for key, pos in target_pose.items():
         pygame.draw.circle(screen, WHITE, pos, 10)
-
-    # Disegna la sagoma del giocatore
-    if results.pose_landmarks:
-        for connection in connections:
-            start = results.pose_landmarks.landmark[connection[0]]
-            end = results.pose_landmarks.landmark[connection[1]]
-
-            start_pos = (int(start.x * WIDTH), int(start.y * HEIGHT))
-            end_pos = (int(end.x * WIDTH), int(end.y * HEIGHT))
-
-            pygame.draw.line(screen, BLUE, start_pos, end_pos, 3)
 
     # Disegna la posizione del giocatore
     for key, pos in player_pose.items():
