@@ -21,8 +21,8 @@ RED = (255, 0, 0)
 BLUE = (0, 0, 255)
 
 # Sfondo
-auto = pygame.image.load(os.path.join('images', 'brick-wall.png'))
-auto = pygame.transform.scale(auto, (WIDTH, HEIGHT))
+wall = pygame.image.load(os.path.join('images', 'wall.png'))
+wall = pygame.transform.scale(wall, (WIDTH, HEIGHT))
 
 # Inizializza la finestra
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
@@ -129,8 +129,32 @@ while game_running:
 
     screen.blit(auto, (0, 0))
     if player_pose:
-        draw_silhouette(screen, player_pose)
+        score = calculate_score(player_pose, target_pose)
 
+    # Incrementa il timer per aumentare la difficoltà
+    time_elapsed += clock.get_time()
+    if time_elapsed > difficulty_timer:
+        target_pose = generate_pose()
+        time_elapsed = 0
+
+    # Disegna sullo schermo
+    screen.blit(wall, (0, 0))  # Mostra lo sfondo
+
+    # Disegna la sagoma target
+    for key, pos in target_pose.items():
+        pygame.draw.circle(screen, BLUE, pos, 10)
+
+    # Disegna la sagoma del giocatore
+    if results.pose_landmarks:
+        for landmark in player_pose.values():
+            pygame.draw.circle(screen, RED, landmark, 10)
+
+    # Mostra il punteggio
+    font = pygame.font.Font(None, 36)
+    score_text = font.render(f"Punteggio: {score}", True, RED)
+    screen.blit(score_text, (10, 10))
+
+    # Aggiorna lo schermo
     pygame.display.flip()
     clock.tick(30)
 
