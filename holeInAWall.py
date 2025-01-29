@@ -146,12 +146,12 @@ while True:
 
     # Disegna la sagoma target
     for key, pos in target_pose.items():
-        pygame.draw.circle(screen, WHITE, pos, 10)
+        pygame.draw.circle(screen, BLUE, pos, 10)
 
     # Disegna la sagoma del giocatore
     if results.pose_landmarks:
         for landmark in player_pose.values():
-            pygame.draw.circle(screen, GREEN, landmark, 10)
+            pygame.draw.circle(screen, RED, landmark, 10)
 
     # Mostra il punteggio
     font = pygame.font.Font(None, 36)
