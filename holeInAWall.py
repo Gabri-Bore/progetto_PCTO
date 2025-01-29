@@ -56,22 +56,22 @@ def draw_silhouette(screen, pose):
     right_foot = pose["right_foot"]
 
     # Disegna la testa più grande e una linea singola che la collega al corpo
-    pygame.draw.circle(screen, BLACK, head, 50)  # Testa più grande
-    pygame.draw.line(screen, BLACK, head, neck, 5)  # Collega la testa al corpo
-    pygame.draw.line(screen, BLACK, neck, left_shoulder, 5)
-    pygame.draw.line(screen, BLACK, neck, right_shoulder, 5)
-    pygame.draw.line(screen, BLACK, left_shoulder, right_shoulder, 5)
-    pygame.draw.line(screen, BLACK, left_shoulder, left_elbow, 5)
-    pygame.draw.line(screen, BLACK, left_elbow, left_hand, 5)
-    pygame.draw.line(screen, BLACK, right_shoulder, right_elbow, 5)
-    pygame.draw.line(screen, BLACK, right_elbow, right_hand, 5)
-    pygame.draw.line(screen, BLACK, left_shoulder, left_hip, 5)
-    pygame.draw.line(screen, BLACK, right_shoulder, right_hip, 5)
-    pygame.draw.line(screen, BLACK, left_hip, right_hip, 5)
-    pygame.draw.line(screen, BLACK, left_hip, left_knee, 5)
-    pygame.draw.line(screen, BLACK, left_knee, left_foot, 5)
-    pygame.draw.line(screen, BLACK, right_hip, right_knee, 5)
-    pygame.draw.line(screen, BLACK, right_knee, right_foot, 5)
+    pygame.draw.circle(screen, BLACK, head, 90)  # Testa più grande
+    pygame.draw.line(screen, BLACK, head, neck, 20)  # Collega la testa al corpo
+    pygame.draw.line(screen, BLACK, neck, left_shoulder, 20)
+    pygame.draw.line(screen, BLACK, neck, right_shoulder, 20)
+    pygame.draw.line(screen, BLACK, left_shoulder, right_shoulder, 20)
+    pygame.draw.line(screen, BLACK, left_shoulder, left_elbow, 20)
+    pygame.draw.line(screen, BLACK, left_elbow, left_hand, 20)
+    pygame.draw.line(screen, BLACK, right_shoulder, right_elbow, 20)
+    pygame.draw.line(screen, BLACK, right_elbow, right_hand, 20)
+    pygame.draw.line(screen, BLACK, left_shoulder, left_hip, 20)
+    pygame.draw.line(screen, BLACK, right_shoulder, right_hip, 20)
+    pygame.draw.line(screen, BLACK, left_hip, right_hip, 20)
+    pygame.draw.line(screen, BLACK, left_hip, left_knee, 20)
+    pygame.draw.line(screen, BLACK, left_knee, left_foot, 20)
+    pygame.draw.line(screen, BLACK, right_hip, right_knee, 20)
+    pygame.draw.line(screen, BLACK, right_knee, right_foot, 20)
 
 # Inizializza la videocamera
 cap = cv2.VideoCapture(0)
