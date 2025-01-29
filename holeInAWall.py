@@ -22,8 +22,8 @@ RED = (255, 0, 0)
 BLUE = (0, 0, 255)
 
 # Sfondo
-auto = pygame.image.load(os.path.join('images', 'sfondo.png'))
-auto = pygame.transform.scale(auto, (WIDTH, HEIGHT))
+brick_wall = pygame.image.load(os.path.join('images', 'brick_wall.png'))
+brick_wall = pygame.transform.scale(brick_wall, (WIDTH, HEIGHT))
 
 # Inizializza la finestra
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
@@ -143,7 +143,7 @@ while True:
         time_elapsed = 0
 
     # Disegna sullo schermo
-    screen.blit(auto, (0, 0))  # Mostra lo sfondo
+    screen.blit(brick_wall, (0, 0))  # Mostra lo sfondo
 
     # Disegna la sagoma target
     for key, pos in target_pose.items():
