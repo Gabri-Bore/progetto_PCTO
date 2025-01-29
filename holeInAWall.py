@@ -21,7 +21,7 @@ RED = (255, 0, 0)
 BLUE = (0, 0, 255)
 
 # Sfondo
-auto = pygame.image.load(os.path.join('images', 'brick-wall.png'))
+auto = pygame.image.load(os.path.join('images', 'wall.png'))
 auto = pygame.transform.scale(auto, (WIDTH, HEIGHT))
 
 # Inizializza la finestra
@@ -41,7 +41,7 @@ def draw_silhouette(screen, pose):
     
     # Estrarre i punti chiave
     head = pose["head"]
-    neck = ((head[0], head[1] + 40))
+    neck = ((head[0], head[1] + 200))
     left_shoulder = pose["left_shoulder"]
     right_shoulder = pose["right_shoulder"]
     left_elbow = pose["left_elbow"]
@@ -57,9 +57,8 @@ def draw_silhouette(screen, pose):
 
     # Disegna la testa più grande e una linea singola che la collega al corpo
     pygame.draw.circle(screen, BLACK, head, 90)  # Testa più grande
-    pygame.draw.line(screen, BLACK, head, neck, 20)  # Collega la testa al corpo
-    pygame.draw.line(screen, BLACK, neck, left_shoulder, 20)
-    pygame.draw.line(screen, BLACK, neck, right_shoulder, 20)
+    pygame.draw.line(screen, BLACK, head, neck,  20)  # Collega la testa al corpo
+
     pygame.draw.line(screen, BLACK, left_shoulder, right_shoulder, 20)
     pygame.draw.line(screen, BLACK, left_shoulder, left_elbow, 20)
     pygame.draw.line(screen, BLACK, left_elbow, left_hand, 20)
