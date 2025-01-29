@@ -7,28 +7,28 @@ import random
 import numpy as np
 from pygame.locals import *
 
-# Inizializza Pygame
+# Initialize Pygame
 pygame.init()
 
-# Dimensioni della finestra
+# Window dimensions
 WIDTH, HEIGHT = 1280, 720
 
-# Colori
+# Colors
 BLACK = (0, 0, 0)
 WHITE = (255, 255, 255)
 GREEN = (0, 255, 0)
 RED = (255, 0, 0)
 BLUE = (0, 0, 255)
 
-# Sfondo
+# Background
 auto = pygame.image.load(os.path.join('images', 'wall.png'))
 auto = pygame.transform.scale(auto, (WIDTH, HEIGHT))
 
-# Inizializza la finestra
+# Initialize the window
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("Hole in the Wall")
 
-# Clock per il framerate
+# Clock for the framerate
 clock = pygame.time.Clock()
 
 # Mediapipe Pose Detection
@@ -39,40 +39,63 @@ def draw_silhouette(screen, pose):
     if not pose:
         return
     
-    # Estrarre i punti chiave
+    # Extract key points
     head = pose["head"]
-    neck = ((head[0], head[1] + 200))
+    
+    # Check if key points exist
+    if "left_shoulder" not in pose or "right_shoulder" not in pose:
+        return  # Exit if shoulders are not found
+
     left_shoulder = pose["left_shoulder"]
     right_shoulder = pose["right_shoulder"]
-    left_elbow = pose["left_elbow"]
-    right_elbow = pose["right_elbow"]
-    left_hand = pose["left_hand"]
-    right_hand = pose["right_hand"]
-    left_hip = pose["left_hip"]
-    right_hip = pose["right_hip"]
-    left_knee = pose["left_knee"]
-    right_knee = pose["right_knee"]
-    left_foot = pose["left_foot"]
-    right_foot = pose["right_foot"]
+    
+    # Calculate neck position as the midpoint between the shoulders
+    neck = ((left_shoulder[0] + right_shoulder[0]) // 2, (left_shoulder[1] + right_shoulder[1]) // 2)
 
-    # Disegna la testa più grande e una linea singola che la collega al corpo
-    pygame.draw.circle(screen, BLACK, head, 90)  # Testa più grande
-    pygame.draw.line(screen, BLACK, head, neck,  20)  # Collega la testa al corpo
+    # Check if other points are available
+    left_elbow = pose.get("left_elbow", None)
+    right_elbow = pose.get("right_elbow", None)
+    left_hand = pose.get("left_hand", None)
+    right_hand = pose.get("right_hand", None)
+    left_hip = pose.get("left_hip", None)
+    right_hip = pose.get("right_hip", None)
+    left_knee = pose.get("left_knee", None)
+    right_knee = pose.get("right_knee", None)
+    left_foot = pose.get("left_foot", None)
+    right_foot = pose.get("right_foot", None)
 
-    pygame.draw.line(screen, BLACK, left_shoulder, right_shoulder, 20)
-    pygame.draw.line(screen, BLACK, left_shoulder, left_elbow, 20)
-    pygame.draw.line(screen, BLACK, left_elbow, left_hand, 20)
-    pygame.draw.line(screen, BLACK, right_shoulder, right_elbow, 20)
-    pygame.draw.line(screen, BLACK, right_elbow, right_hand, 20)
-    pygame.draw.line(screen, BLACK, left_shoulder, left_hip, 20)
-    pygame.draw.line(screen, BLACK, right_shoulder, right_hip, 20)
-    pygame.draw.line(screen, BLACK, left_hip, right_hip, 20)
-    pygame.draw.line(screen, BLACK, left_hip, left_knee, 20)
-    pygame.draw.line(screen, BLACK, left_knee, left_foot, 20)
-    pygame.draw.line(screen, BLACK, right_hip, right_knee, 20)
-    pygame.draw.line(screen, BLACK, right_knee, right_foot, 20)
+    # Draw the head and a line connecting it to the neck
+    pygame.draw.circle(screen, BLACK, head, 90)  # Larger head
+    pygame.draw.line(screen, BLACK, head, neck,  20)  # Line from head to neck
 
-# Inizializza la videocamera
+    if left_shoulder and right_shoulder:
+        pygame.draw.line(screen, BLACK, left_shoulder, right_shoulder, 20)
+
+    # Draw lines for arms and hands only if points are available
+    if left_elbow and left_hand:
+        pygame.draw.line(screen, BLACK, left_shoulder, left_elbow, 20)
+        pygame.draw.line(screen, BLACK, left_elbow, left_hand, 20)
+
+    if right_elbow and right_hand:
+        pygame.draw.line(screen, BLACK, right_shoulder, right_elbow, 20)
+        pygame.draw.line(screen, BLACK, right_elbow, right_hand, 20)
+
+    # Draw lines for the torso and hips
+    if left_hip and right_hip:
+        pygame.draw.line(screen, BLACK, left_shoulder, left_hip, 20)
+        pygame.draw.line(screen, BLACK, right_shoulder, right_hip, 20)
+        pygame.draw.line(screen, BLACK, left_hip, right_hip, 20)
+
+    # Draw lines for the legs and feet
+    if left_knee and left_foot:
+        pygame.draw.line(screen, BLACK, left_hip, left_knee, 20)
+        pygame.draw.line(screen, BLACK, left_knee, left_foot, 20)
+
+    if right_knee and right_foot:
+        pygame.draw.line(screen, BLACK, right_hip, right_knee, 20)
+        pygame.draw.line(screen, BLACK, right_knee, right_foot, 20)
+
+# Initialize the camera
 cap = cv2.VideoCapture(0)
 ret, frame = cap.read()
 FRAME_HEIGHT, FRAME_WIDTH = frame.shape[:2]
@@ -83,17 +106,17 @@ while game_running:
         if event.type == pygame.QUIT:
             game_running = False
 
-    # Leggi il frame dalla videocamera
+    # Read the frame from the camera
     ret, frame = cap.read()
     if not ret:
-        print("Errore nell'accesso alla videocamera.")
+        print("Error accessing the camera.")
         break
 
     frame = cv2.flip(frame, 1)
     rgb_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
     results = pose.process(rgb_frame)
 
-    # Ottieni i punti del corpo del giocatore
+    # Get the body pose points
     player_pose = {}
     if results.pose_landmarks:
         landmarks = results.pose_landmarks.landmark
