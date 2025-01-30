@@ -35,6 +35,27 @@ clock = pygame.time.Clock()
 mp_pose = mp.solutions.pose
 pose = mp_pose.Pose(min_detection_confidence=0.5, min_tracking_confidence=0.5)
 
+# Generate random points
+num_points = 5
+points = [(random.randint(50, WIDTH - 50), random.randint(50, HEIGHT - 50)) for _ in range(num_points)]
+point_radius = 15
+score = 0
+font = pygame.font.Font(None, 36)
+
+def check_collision(player_pose):
+    global score
+    if not player_pose:
+        return
+    
+    body_parts = ['head', 'left_hand', 'right_hand', 'left_foot', 'right_foot']
+    for part in body_parts:
+        if part in player_pose:
+            x, y = player_pose[part]
+            for i, (px, py) in enumerate(points):
+                if (x - px) ** 2 + (y - py) ** 2 < point_radius ** 2:
+                    score += 1
+                    points[i] = (random.randint(50, WIDTH - 50), random.randint(50, HEIGHT - 50))
+
 def generate_random_silhouette():
     # Generate a random silhouette within the center of the screen
     center_x, center_y = WIDTH // 2, HEIGHT // 2
@@ -150,6 +171,9 @@ def draw_silhouette(screen, pose, color=WHITE):
         pygame.draw.line(screen, color, right_hip, right_knee, 20)
         pygame.draw.line(screen, color, right_knee, right_foot, 20)
 
+def draw_points():
+    for px, py in points:
+        pygame.draw.circle(screen, RED, (px, py), point_radius)
 
 
 # Initialize the camera
@@ -212,14 +236,32 @@ while game_running:
     # Clear the screen and draw the background
     screen.blit(auto, (0, 0))  # Disegna lo sfondo PRIMA di tutto
 
+<<<<<<< Updated upstream
     # Draw the player's pose if detected, otherwise draw the random silhouette
     if player_pose:
         draw_silhouette(screen, player_pose, BLACK)  # Disegna la sagoma del giocatore in nero
         draw_silhouette(screen, random_silhouette, WHITE)  # Disegna la sagoma casuale in bianco
+=======
+    # Disegna la silhouette del giocatore se disponibile, altrimenti il manichino
+if player_pose:
+    draw_silhouette(screen, player_pose)
+>>>>>>> Stashed changes
 
-    # Update the display
-    pygame.display.flip()
-    clock.tick(30)
+
+# Disegna i punti sopra lo sfondo e sopra la silhouette
+draw_points()
+
+# Se il giocatore è rilevato, controlla le collisioni
+if player_pose:
+    check_collision(player_pose)
+
+# Mostra il punteggio
+score_text = font.render(f"Score: {score}", True, WHITE)
+screen.blit(score_text, (20, 20))
+
+# Update display
+pygame.display.flip()
+clock.tick(30)
 
 cap.release()
 pygame.quit()
