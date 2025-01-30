@@ -65,7 +65,15 @@ def draw_silhouette(screen, pose):
     right_foot = pose.get("right_foot", None)
 
     # Draw the head and a line connecting it to the neck
+<<<<<<< HEAD
+    pygame.draw.circle(screen, BLACK, head, 65)  # Larger head
+=======
+<<<<<<< Updated upstream
     pygame.draw.circle(screen, BLACK, head, 75)  # Larger head
+=======
+    pygame.draw.circle(screen, BLACK, head, 65)  # Larger head
+>>>>>>> Stashed changes
+>>>>>>> 5c380e0f812a751efcd27ef458bf04c42fd6cb1f
     pygame.draw.line(screen, BLACK, head, neck,  20)  # Line from head to neck
 
     if left_shoulder and right_shoulder:
