@@ -95,6 +95,8 @@ def draw_silhouette(screen, pose):
         pygame.draw.line(screen, BLACK, right_hip, right_knee, 20)
         pygame.draw.line(screen, BLACK, right_knee, right_foot, 20)
 
+
+
 # Initialize the camera
 cap = cv2.VideoCapture(0)
 ret, frame = cap.read()
