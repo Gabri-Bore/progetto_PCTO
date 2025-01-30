@@ -90,7 +90,7 @@ def generate_random_silhouette():
         "right_foot": right_foot
     }
 
-def draw_silhouette(screen, pose):
+def draw_silhouette(screen, pose, color=WHITE):
     if not pose:
         return
     
@@ -120,35 +120,35 @@ def draw_silhouette(screen, pose):
     right_foot = pose.get("right_foot", None)
 
     # Draw the head and a line connecting it to the neck
-    pygame.draw.circle(screen, BLACK, head, 65)  # Larger head
-    pygame.draw.line(screen, BLACK, head, neck,  20)  # Line from head to neck
+    pygame.draw.circle(screen, color, head, 65)  # Larger head
+    pygame.draw.line(screen, color, head, neck,  20)  # Line from head to neck
 
     if left_shoulder and right_shoulder:
-        pygame.draw.line(screen, BLACK, left_shoulder, right_shoulder, 20)
+        pygame.draw.line(screen, color, left_shoulder, right_shoulder, 20)
 
     # Draw lines for arms and hands only if points are available
     if left_elbow and left_hand:
-        pygame.draw.line(screen, BLACK, left_shoulder, left_elbow, 20)
-        pygame.draw.line(screen, BLACK, left_elbow, left_hand, 20)
+        pygame.draw.line(screen, color, left_shoulder, left_elbow, 20)
+        pygame.draw.line(screen, color, left_elbow, left_hand, 20)
 
     if right_elbow and right_hand:
-        pygame.draw.line(screen, BLACK, right_shoulder, right_elbow, 20)
-        pygame.draw.line(screen, BLACK, right_elbow, right_hand, 20)
+        pygame.draw.line(screen, color, right_shoulder, right_elbow, 20)
+        pygame.draw.line(screen, color, right_elbow, right_hand, 20)
 
     # Draw lines for the torso and hips
     if left_hip and right_hip:
-        pygame.draw.line(screen, BLACK, left_shoulder, left_hip, 20)
-        pygame.draw.line(screen, BLACK, right_shoulder, right_hip, 20)
-        pygame.draw.line(screen, BLACK, left_hip, right_hip, 20)
+        pygame.draw.line(screen, color, left_shoulder, left_hip, 20)
+        pygame.draw.line(screen, color, right_shoulder, right_hip, 20)
+        pygame.draw.line(screen, color, left_hip, right_hip, 20)
 
     # Draw lines for the legs and feet
     if left_knee and left_foot:
-        pygame.draw.line(screen, BLACK, left_hip, left_knee, 20)
-        pygame.draw.line(screen, BLACK, left_knee, left_foot, 20)
+        pygame.draw.line(screen, color, left_hip, left_knee, 20)
+        pygame.draw.line(screen, color, left_knee, left_foot, 20)
 
     if right_knee and right_foot:
-        pygame.draw.line(screen, BLACK, right_hip, right_knee, 20)
-        pygame.draw.line(screen, BLACK, right_knee, right_foot, 20)
+        pygame.draw.line(screen, color, right_hip, right_knee, 20)
+        pygame.draw.line(screen, color, right_knee, right_foot, 20)
 
 # Initialize the camera
 cap = cv2.VideoCapture(0)
@@ -208,13 +208,12 @@ while game_running:
         }
 
     # Clear the screen and draw the background
-    screen.blit(auto, (0, 0))
+    screen.blit(auto, (0, 0))  # Disegna lo sfondo PRIMA di tutto
 
     # Draw the player's pose if detected, otherwise draw the random silhouette
     if player_pose:
-        draw_silhouette(screen, player_pose)
-    else:
-        draw_silhouette(screen, random_silhouette)
+        draw_silhouette(screen, player_pose, BLACK)  # Disegna la sagoma del giocatore in nero
+        draw_silhouette(screen, random_silhouette, WHITE)  # Disegna la sagoma casuale in bianco
 
     # Update the display
     pygame.display.flip()
