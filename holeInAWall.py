@@ -35,12 +35,12 @@ clock = pygame.time.Clock()
 mp_pose = mp.solutions.pose
 pose = mp_pose.Pose(min_detection_confidence=0.5, min_tracking_confidence=0.5)
 
-def generate_random_silhouette():
-    # Generate a random silhouette within the center of the screen
+def generate_limited_silhouette():
+    # Generate a silhouette with limited movements
     center_x, center_y = WIDTH // 2, HEIGHT // 2
-    offset_range = 50  # Range of random offset from the center
+    offset_range = 20  # Reduced range of random offset for limited movements
 
-    # Randomize the positions of the joints
+    # Randomize the positions of the joints with limited range
     head = (center_x + random.randint(-offset_range, offset_range), 
             center_y - 150 + random.randint(-offset_range, offset_range))
     
@@ -141,6 +141,15 @@ def draw_silhouette(screen, pose, color=WHITE):
         pygame.draw.line(screen, color, right_shoulder, right_hip, 20)
         pygame.draw.line(screen, color, left_hip, right_hip, 20)
 
+        # Fill the torso with a polygon
+        torso_points = [
+            left_shoulder,
+            right_shoulder,
+            right_hip,
+            left_hip
+        ]
+        pygame.draw.polygon(screen, color, torso_points)  # Fill the torso
+
     # Draw lines for the legs and feet
     if left_knee and left_foot:
         pygame.draw.line(screen, color, left_hip, left_knee, 20)
@@ -155,8 +164,8 @@ cap = cv2.VideoCapture(0)
 ret, frame = cap.read()
 FRAME_HEIGHT, FRAME_WIDTH = frame.shape[:2]
 
-# Generate a random silhouette
-random_silhouette = generate_random_silhouette()
+# Generate a random silhouette with limited movements
+random_silhouette = generate_limited_silhouette()
 
 game_running = True
 while game_running:
@@ -208,12 +217,12 @@ while game_running:
         }
 
     # Clear the screen and draw the background
-    screen.blit(auto, (0, 0))  # Disegna lo sfondo PRIMA di tutto
+    screen.blit(auto, (0, 0))  # Draw the background first
 
     # Draw the player's pose if detected, otherwise draw the random silhouette
     if player_pose:
-        draw_silhouette(screen, player_pose, BLACK)  # Disegna la sagoma del giocatore in nero
-        draw_silhouette(screen, random_silhouette, WHITE)  # Disegna la sagoma casuale in bianco
+        draw_silhouette(screen, player_pose, BLACK)  # Draw the player's silhouette in black
+        draw_silhouette(screen, random_silhouette, WHITE)  # Draw the random silhouette in white
 
     # Update the display
     pygame.display.flip()
