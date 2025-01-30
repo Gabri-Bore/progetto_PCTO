@@ -35,6 +35,61 @@ clock = pygame.time.Clock()
 mp_pose = mp.solutions.pose
 pose = mp_pose.Pose(min_detection_confidence=0.5, min_tracking_confidence=0.5)
 
+def generate_random_silhouette():
+    # Generate a random silhouette within the center of the screen
+    center_x, center_y = WIDTH // 2, HEIGHT // 2
+    offset_range = 50  # Range of random offset from the center
+
+    # Randomize the positions of the joints
+    head = (center_x + random.randint(-offset_range, offset_range), 
+            center_y - 150 + random.randint(-offset_range, offset_range))
+    
+    left_shoulder = (center_x - 50 + random.randint(-offset_range, offset_range), 
+                     center_y - 50 + random.randint(-offset_range, offset_range))
+    right_shoulder = (center_x + 50 + random.randint(-offset_range, offset_range), 
+                      center_y - 50 + random.randint(-offset_range, offset_range))
+    
+    left_elbow = (center_x - 100 + random.randint(-offset_range, offset_range), 
+                  center_y + 50 + random.randint(-offset_range, offset_range))
+    right_elbow = (center_x + 100 + random.randint(-offset_range, offset_range), 
+                   center_y + 50 + random.randint(-offset_range, offset_range))
+    
+    left_hand = (center_x - 150 + random.randint(-offset_range, offset_range), 
+                 center_y + 150 + random.randint(-offset_range, offset_range))
+    right_hand = (center_x + 150 + random.randint(-offset_range, offset_range), 
+                  center_y + 150 + random.randint(-offset_range, offset_range))
+    
+    left_hip = (center_x - 50 + random.randint(-offset_range, offset_range), 
+                center_y + 100 + random.randint(-offset_range, offset_range))
+    right_hip = (center_x + 50 + random.randint(-offset_range, offset_range), 
+                 center_y + 100 + random.randint(-offset_range, offset_range))
+    
+    left_knee = (center_x - 50 + random.randint(-offset_range, offset_range), 
+                 center_y + 200 + random.randint(-offset_range, offset_range))
+    right_knee = (center_x + 50 + random.randint(-offset_range, offset_range), 
+                  center_y + 200 + random.randint(-offset_range, offset_range))
+    
+    left_foot = (center_x - 50 + random.randint(-offset_range, offset_range), 
+                 center_y + 300 + random.randint(-offset_range, offset_range))
+    right_foot = (center_x + 50 + random.randint(-offset_range, offset_range), 
+                  center_y + 300 + random.randint(-offset_range, offset_range))
+    
+    return {
+        "head": head,
+        "left_shoulder": left_shoulder,
+        "right_shoulder": right_shoulder,
+        "left_elbow": left_elbow,
+        "right_elbow": right_elbow,
+        "left_hand": left_hand,
+        "right_hand": right_hand,
+        "left_hip": left_hip,
+        "right_hip": right_hip,
+        "left_knee": left_knee,
+        "right_knee": right_knee,
+        "left_foot": left_foot,
+        "right_foot": right_foot
+    }
+
 def draw_silhouette(screen, pose):
     if not pose:
         return
@@ -102,6 +157,9 @@ cap = cv2.VideoCapture(0)
 ret, frame = cap.read()
 FRAME_HEIGHT, FRAME_WIDTH = frame.shape[:2]
 
+# Generate a random silhouette
+random_silhouette = generate_random_silhouette()
+
 game_running = True
 while game_running:
     for event in pygame.event.get():
@@ -151,10 +209,16 @@ while game_running:
                             int(landmarks[mp_pose.PoseLandmark.RIGHT_ANKLE].y * HEIGHT))
         }
 
+    # Clear the screen and draw the background
     screen.blit(auto, (0, 0))
+
+    # Draw the player's pose if detected, otherwise draw the random silhouette
     if player_pose:
         draw_silhouette(screen, player_pose)
+    else:
+        draw_silhouette(screen, random_silhouette)
 
+    # Update the display
     pygame.display.flip()
     clock.tick(30)
 
