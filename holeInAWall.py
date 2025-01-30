@@ -21,7 +21,7 @@ RED = (255, 0, 0)
 BLUE = (0, 0, 255)
 
 # Background
-auto = pygame.image.load(os.path.join('images', 'wall.png'))
+auto = pygame.image.load(os.path.join('images', 'palco.png'))
 auto = pygame.transform.scale(auto, (WIDTH, HEIGHT))
 
 # Initialize the window
