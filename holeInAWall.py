@@ -272,7 +272,7 @@ while game_running:
 
         if elapsed_time > time_threshold:
             # Update only the selected body part in the random silhouette
-            if selected_body_part == "Tutto":
+            if selected_body_part == "TCorpo":
                 random_silhouette = generate_limited_silhouette()
             elif selected_body_part == "Braccia":
                 random_silhouette["left_elbow"] = (random_silhouette["left_elbow"][0] + random.randint(-20, 20),
