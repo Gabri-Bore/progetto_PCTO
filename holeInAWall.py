@@ -51,7 +51,7 @@ game_ready = False
 selected_body_part = None  # None means all body parts are active
 
 # Menu options
-menu_options = ["Tutto", "Braccia", "Gambe", "Testa"]
+menu_options = ["Gambe e braccia", "Braccia", "Gambe", "Testa"]
 current_option = 0
 
 def draw_menu():
