@@ -6,6 +6,7 @@ import mediapipe as mp
 import random
 import numpy as np
 from pygame.locals import *
+import time  # Importa il modulo time per gestire il tempo
 
 # Initialize Pygame
 pygame.init()
@@ -34,6 +35,17 @@ clock = pygame.time.Clock()
 # Mediapipe Pose Detection
 mp_pose = mp.solutions.pose
 pose = mp_pose.Pose(min_detection_confidence=0.5, min_tracking_confidence=0.5)
+
+# Time threshold variables
+initial_time_threshold = 20  # 20 seconds initially
+time_threshold = initial_time_threshold
+start_time = time.time()  # Record the start time
+
+# Font for displaying the remaining time
+font = pygame.font.Font(None, 74)  # Usa un font predefinito con dimensione 74
+
+# Variable to check if the game is ready
+game_ready = False
 
 def generate_limited_silhouette():
     # Generate a silhouette with limited movements
@@ -224,9 +236,28 @@ while game_running:
         draw_silhouette(screen, player_pose, BLACK)  # Draw the player's silhouette in black
         draw_silhouette(screen, random_silhouette, WHITE)  # Draw the random silhouette in white
 
+    # Set game_ready to True after the first frame is displayed
+    if not game_ready:
+        game_ready = True
+        start_time = time.time()  # Start the timer only after the game is ready
+
+    # Check if the time threshold has been exceeded
+    if game_ready:
+        elapsed_time = time.time() - start_time
+        remaining_time = max(0, time_threshold - elapsed_time)  # Calcola il tempo rimanente
+
+        # Render the remaining time on the screen
+        time_text = font.render(f"Tempo: {int(remaining_time)}", True, RED)
+        screen.blit(time_text, (10, 10))  # Posiziona il testo in alto a sinistra
+
+        if elapsed_time > time_threshold:
+            random_silhouette = generate_limited_silhouette()  # Generate a new silhouette
+            start_time = time.time()  # Reset the start time
+            time_threshold = max(10, time_threshold - 0.5)  # Decrease the time threshold, but not below 10 seconds
+
     # Update the display
     pygame.display.flip()
-    clock.tick(30)
+    clock.tick(60)
 
 cap.release()
 pygame.quit()
