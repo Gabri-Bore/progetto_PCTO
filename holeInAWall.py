@@ -86,9 +86,17 @@ def salva_punteggio(punteggio):
 
     print(f"Punteggio {punteggio}% salvato correttamente!")
     
-     # Se i punteggi sono simili negli ultimi 3 tentativi, aggiungi un +5% extra
-    if len(ultimi_tre) == 3 and all(abs(punteggio - p) <= 5 for p in ultimi_tre):
-        punteggio = min(100, punteggio + 5)
+
+def draw_feedback_points(screen, player_pose, silhouette, threshold=50):
+    for key, (sx, sy) in silhouette.items():
+        if key in player_pose:
+            px, py = player_pose[key]
+            distanza = np.sqrt((px - sx) ** 2 + (py - sy) ** 2)
+            # Se entro la soglia, colore verde; altrimenti rosso (o un altro colore)
+            color = GREEN if distanza <= threshold else RED
+            # Disegna un piccolo cerchio di feedback
+            pygame.draw.circle(screen, color, (sx, sy), 10)
+
 
 def calcola_punteggio(player_pose, silhouette):
     if not player_pose:
@@ -104,7 +112,7 @@ def calcola_punteggio(player_pose, silhouette):
             sx, sy = silhouette[key]
             distanza = np.sqrt((px - sx) ** 2 + (py - sy) ** 2)
             
-            # Normalizziamo il punteggio tra 0 e 100 (puoi cambiare il valore 200 se vuoi)
+            # Normalizziamo il punteggio tra 0 e 100
             punteggio = max(0, 100 - (distanza / 4))
             
             punteggio_totale += punteggio
@@ -314,11 +322,15 @@ while game_running:
 
     # Draw the player's pose if detected, otherwise draw the random silhouette
     if player_pose:
+        # Disegna la silhouette del giocatore (in nero) e quella target (in bianco)
         draw_silhouette(screen, player_pose, BLACK)
         draw_silhouette(screen, random_silhouette, WHITE)
     
-        # Calcola il punteggio
-        punteggio = calcola_punteggio(player_pose, random_silhouette)
+    # Aggiungi i feedback colorati sui punti
+    draw_feedback_points(screen, player_pose, random_silhouette, threshold=40)
+    
+    # Calcola il punteggio, etc...
+    punteggio = calcola_punteggio(player_pose, random_silhouette)
 
     # Set game_ready to True after the first frame is displayed
     if not game_ready:
