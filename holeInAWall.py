@@ -105,7 +105,7 @@ def calcola_punteggio(player_pose, silhouette):
             distanza = np.sqrt((px - sx) ** 2 + (py - sy) ** 2)
             
             # Normalizziamo il punteggio tra 0 e 100 (puoi cambiare il valore 200 se vuoi)
-            punteggio = max(0, 100 - (distanza / 3))
+            punteggio = max(0, 100 - (distanza / 4))
             
             punteggio_totale += punteggio
             punti_confronto += 1
