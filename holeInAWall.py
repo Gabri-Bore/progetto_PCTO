@@ -56,10 +56,34 @@ menu_options = ["Gambe e braccia", "Braccia", "Gambe", "Testa"]
 current_option = 0
 
 def salva_punteggio(punteggio):
-    file_path = "punteggio.csv"
+    file_path = "punteggi.csv"
+
+    # Controlla se esiste un punteggio precedente
+    ultimo_punteggio = 0
+    ultimi_tre = []
+    if os.path.exists(file_path):
+        with open(file_path, "r") as file:
+            righe = file.readlines()
+            ultimi_tre = [int(r.strip().replace("%", "")) for r in righe[-3:] if r.strip().replace("%", "").isdigit()]
+            if righe:
+                try:
+                    ultimo_punteggio = int(righe[-1].strip().replace("%", ""))  # Prende l'ultimo punteggio salvato
+                except ValueError:
+                    ultimo_punteggio = 0
+
+    # 🔹 Se il giocatore ha migliorato, aggiunge un bonus del 10%
+    if punteggio > ultimo_punteggio:
+        punteggio = min(100, int(punteggio * 1.1))  # Aumenta del 10% fino a max 100
+
+    # 🔹 Se i punteggi sono simili negli ultimi 3 tentativi, aggiungi un +5% extra
+    if len(ultimi_tre) == 3 and all(abs(punteggio - p) <= 5 for p in ultimi_tre):
+        punteggio = min(100, punteggio + 5)
+
+    # Salva il punteggio con il simbolo %
     with open(file_path, mode='a', newline='') as file:
         writer = csv.writer(file)
-        writer.writerow([f"{punteggio}%"])  # Aggiunge il simbolo %
+        writer.writerow([f"{punteggio}%"])
+
     print(f"Punteggio {punteggio}% salvato correttamente!")
     
 
