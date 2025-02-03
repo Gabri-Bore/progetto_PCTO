@@ -62,9 +62,17 @@ def salva_punteggio(punteggio):
         writer.writerow([f"{punteggio}%"])  # Aggiunge il simbolo %
     print(f"Punteggio {punteggio}% salvato correttamente!")
     
-     # Se i punteggi sono simili negli ultimi 3 tentativi, aggiungi un +5% extra
-    if len(ultimi_tre) == 3 and all(abs(punteggio - p) <= 5 for p in ultimi_tre):
-        punteggio = min(100, punteggio + 5)
+
+def draw_feedback_points(screen, player_pose, silhouette, threshold=50):
+    for key, (sx, sy) in silhouette.items():
+        if key in player_pose:
+            px, py = player_pose[key]
+            distanza = np.sqrt((px - sx) ** 2 + (py - sy) ** 2)
+            # Se entro la soglia, colore verde; altrimenti rosso (o un altro colore)
+            color = GREEN if distanza <= threshold else RED
+            # Disegna un piccolo cerchio di feedback
+            pygame.draw.circle(screen, color, (sx, sy), 10)
+
 
 def calcola_punteggio(player_pose, silhouette):
     if not player_pose:
@@ -80,7 +88,7 @@ def calcola_punteggio(player_pose, silhouette):
             sx, sy = silhouette[key]
             distanza = np.sqrt((px - sx) ** 2 + (py - sy) ** 2)
             
-            # Normalizziamo il punteggio tra 0 e 100 (puoi cambiare il valore 200 se vuoi)
+            # Normalizziamo il punteggio tra 0 e 100 
             punteggio = max(0, 100 - (distanza / 4))
             
             punteggio_totale += punteggio
