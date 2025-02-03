@@ -7,6 +7,7 @@ import random
 import numpy as np
 from pygame.locals import *
 import time
+import csv
 
 # Initialize Pygame
 pygame.init()
@@ -53,6 +54,39 @@ selected_body_part = None  # None means all body parts are active
 # Menu options
 menu_options = ["Gambe e braccia", "Braccia", "Gambe", "Testa"]
 current_option = 0
+
+def salva_punteggio(punteggio):
+    file_path = "punteggi.csv"
+    with open(file_path, mode='a', newline='') as file:
+        writer = csv.writer(file)
+        writer.writerow([f"{punteggio}%"])  # Aggiunge il simbolo %
+    print(f"Punteggio {punteggio}% salvato correttamente!")
+
+
+def calcola_punteggio(player_pose, silhouette):
+    if not player_pose:
+        return 0  # Se non ci sono dati del giocatore, il punteggio è 0
+
+    punteggio_totale = 0
+    punti_confronto = 0
+
+    for key in silhouette.keys():
+        if key in player_pose:
+            # Calcola la distanza tra il punto del giocatore e quello della silhouette
+            px, py = player_pose[key]
+            sx, sy = silhouette[key]
+            distanza = np.sqrt((px - sx) ** 2 + (py - sy) ** 2)
+            
+            # Normalizziamo il punteggio tra 0 e 100 (puoi cambiare il valore 200 se vuoi)
+            punteggio = max(0, 100 - (distanza / 2))
+            
+            punteggio_totale += punteggio
+            punti_confronto += 1
+
+    if punti_confronto == 0:
+        return 0  # Evita divisioni per zero
+
+    return int(punteggio_totale / punti_confronto)  # Media dei punteggi
 
 def draw_menu():
     screen.fill(BLACK)
@@ -255,6 +289,9 @@ while game_running:
     if player_pose:
         draw_silhouette(screen, player_pose, BLACK)
         draw_silhouette(screen, random_silhouette, WHITE)
+    
+        # Calcola il punteggio
+        punteggio = calcola_punteggio(player_pose, random_silhouette)
 
     # Set game_ready to True after the first frame is displayed
     if not game_ready:
@@ -271,6 +308,9 @@ while game_running:
         screen.blit(time_text, (10, 10))
 
         if elapsed_time > time_threshold:
+            print(f"Punteggio finale: {punteggio}")  # Debug
+            salva_punteggio(punteggio)  # Salva il punteggio nel CSV
+
             # Update only the selected body part in the random silhouette
             if selected_body_part == "Gambe e braccia":
                 random_silhouette = generate_limited_silhouette()
