@@ -380,6 +380,7 @@ while game_running:
 
     # Update the display
     pygame.display.flip()
+    pygame.display.update()
     clock.tick(60)
 
 cap.release()
