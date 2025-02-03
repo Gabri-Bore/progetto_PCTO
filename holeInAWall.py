@@ -56,7 +56,7 @@ menu_options = ["Gambe e braccia", "Braccia", "Gambe", "Testa"]
 current_option = 0
 
 def salva_punteggio(punteggio):
-    file_path = "punteggi.csv"
+    file_path = "punteggio.csv"
 
     # Controlla se esiste un punteggio precedente
     ultimo_punteggio = 0
@@ -71,11 +71,11 @@ def salva_punteggio(punteggio):
                 except ValueError:
                     ultimo_punteggio = 0
 
-    # 🔹 Se il giocatore ha migliorato, aggiunge un bonus del 10%
+    #  Se il giocatore ha migliorato, aggiunge un bonus del 10%
     if punteggio > ultimo_punteggio:
         punteggio = min(100, int(punteggio * 1.1))  # Aumenta del 10% fino a max 100
 
-    # 🔹 Se i punteggi sono simili negli ultimi 3 tentativi, aggiungi un +5% extra
+    #  Se i punteggi sono simili negli ultimi 3 tentativi, aggiungi un +5% extra
     if len(ultimi_tre) == 3 and all(abs(punteggio - p) <= 5 for p in ultimi_tre):
         punteggio = min(100, punteggio + 5)
 
