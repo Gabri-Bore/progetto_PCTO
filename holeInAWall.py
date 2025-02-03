@@ -6,6 +6,7 @@ import mediapipe as mp
 import random
 import numpy as np
 from pygame.locals import *
+import time
 
 # Initialize Pygame
 pygame.init()
@@ -35,33 +36,36 @@ clock = pygame.time.Clock()
 mp_pose = mp.solutions.pose
 pose = mp_pose.Pose(min_detection_confidence=0.5, min_tracking_confidence=0.5)
 
-# Generate random points
-num_points = 5
-points = [(random.randint(50, WIDTH - 50), random.randint(50, HEIGHT - 50)) for _ in range(num_points)]
-point_radius = 15
-score = 0
-font = pygame.font.Font(None, 36)
+# Time threshold variables
+initial_time_threshold = 20  # 20 seconds initially
+time_threshold = initial_time_threshold
+start_time = time.time()
 
-def check_collision(player_pose):
-    global score
-    if not player_pose:
-        return
-    
-    body_parts = ['head', 'left_hand', 'right_hand', 'left_foot', 'right_foot']
-    for part in body_parts:
-        if part in player_pose:
-            x, y = player_pose[part]
-            for i, (px, py) in enumerate(points):
-                if (x - px) ** 2 + (y - py) ** 2 < point_radius ** 2:
-                    score += 1
-                    points[i] = (random.randint(50, WIDTH - 50), random.randint(50, HEIGHT - 50))
+# Font for displaying the remaining time
+font = pygame.font.Font(None, 74)
 
-def generate_random_silhouette():
-    # Generate a random silhouette within the center of the screen
+# Variable to check if the game is ready
+game_ready = False
+
+# Variable to store the selected body part
+selected_body_part = None  # None means all body parts are active
+
+# Menu options
+menu_options = ["Gambe e braccia", "Braccia", "Gambe", "Testa"]
+current_option = 0
+
+def draw_menu():
+    screen.fill(BLACK)
+    for i, option in enumerate(menu_options):
+        color = GREEN if i == current_option else WHITE
+        text = font.render(option, True, color)
+        screen.blit(text, (WIDTH // 2 - text.get_width() // 2, HEIGHT // 2 - 100 + i * 100))
+    pygame.display.flip()
+
+def generate_limited_silhouette():
     center_x, center_y = WIDTH // 2, HEIGHT // 2
-    offset_range = 50  # Range of random offset from the center
+    offset_range = 20
 
-    # Randomize the positions of the joints
     head = (center_x + random.randint(-offset_range, offset_range), 
             center_y - 150 + random.randint(-offset_range, offset_range))
     
@@ -115,20 +119,16 @@ def draw_silhouette(screen, pose, color=WHITE):
     if not pose:
         return
     
-    # Extract key points
     head = pose["head"]
     
-    # Check if key points exist
     if "left_shoulder" not in pose or "right_shoulder" not in pose:
-        return  # Exit if shoulders are not found
+        return
 
     left_shoulder = pose["left_shoulder"]
     right_shoulder = pose["right_shoulder"]
     
-    # Calculate neck position as the midpoint between the shoulders
     neck = ((left_shoulder[0] + right_shoulder[0]) // 2, (left_shoulder[1] + right_shoulder[1]) // 2)
 
-    # Check if other points are available
     left_elbow = pose.get("left_elbow", None)
     right_elbow = pose.get("right_elbow", None)
     left_hand = pose.get("left_hand", None)
@@ -140,51 +140,66 @@ def draw_silhouette(screen, pose, color=WHITE):
     left_foot = pose.get("left_foot", None)
     right_foot = pose.get("right_foot", None)
 
-    # Draw the head and a line connecting it to the neck
-    pygame.draw.circle(screen, color, head, 65)  # Larger head
-    pygame.draw.line(screen, color, head, neck,  20)  # Line from head to neck
+    # Draw the head and neck
+    pygame.draw.circle(screen, color, head, 65)
+    pygame.draw.line(screen, color, head, neck, 20)
 
     if left_shoulder and right_shoulder:
         pygame.draw.line(screen, color, left_shoulder, right_shoulder, 20)
 
-    # Draw lines for arms and hands only if points are available
+    # Draw arms
     if left_elbow and left_hand:
         pygame.draw.line(screen, color, left_shoulder, left_elbow, 20)
         pygame.draw.line(screen, color, left_elbow, left_hand, 20)
-
     if right_elbow and right_hand:
         pygame.draw.line(screen, color, right_shoulder, right_elbow, 20)
         pygame.draw.line(screen, color, right_elbow, right_hand, 20)
 
-    # Draw lines for the torso and hips
+    # Draw torso and hips
     if left_hip and right_hip:
         pygame.draw.line(screen, color, left_shoulder, left_hip, 20)
         pygame.draw.line(screen, color, right_shoulder, right_hip, 20)
         pygame.draw.line(screen, color, left_hip, right_hip, 20)
+        torso_points = [left_shoulder, right_shoulder, right_hip, left_hip]
+        pygame.draw.polygon(screen, color, torso_points)
 
-    # Draw lines for the legs and feet
+    # Draw legs
     if left_knee and left_foot:
         pygame.draw.line(screen, color, left_hip, left_knee, 20)
         pygame.draw.line(screen, color, left_knee, left_foot, 20)
-
     if right_knee and right_foot:
         pygame.draw.line(screen, color, right_hip, right_knee, 20)
         pygame.draw.line(screen, color, right_knee, right_foot, 20)
-
-def draw_points():
-    for px, py in points:
-        pygame.draw.circle(screen, RED, (px, py), point_radius)
-
 
 # Initialize the camera
 cap = cv2.VideoCapture(0)
 ret, frame = cap.read()
 FRAME_HEIGHT, FRAME_WIDTH = frame.shape[:2]
 
-# Generate a random silhouette
-random_silhouette = generate_random_silhouette()
+# Generate a random silhouette with limited movements
+random_silhouette = generate_limited_silhouette()
 
-game_running = True
+# Menu loop
+menu_running = True
+while menu_running:
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            menu_running = False
+            game_running = False
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_UP:
+                current_option = (current_option - 1) % len(menu_options)
+            elif event.key == pygame.K_DOWN:
+                current_option = (current_option + 1) % len(menu_options)
+            elif event.key == pygame.K_RETURN:
+                selected_body_part = menu_options[current_option]
+                menu_running = False
+                game_running = True
+                start_time = time.time()
+
+    draw_menu()
+
+# Main game loop
 while game_running:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -234,34 +249,59 @@ while game_running:
         }
 
     # Clear the screen and draw the background
-    screen.blit(auto, (0, 0))  # Disegna lo sfondo PRIMA di tutto
+    screen.blit(auto, (0, 0))
 
-<<<<<<< Updated upstream
     # Draw the player's pose if detected, otherwise draw the random silhouette
     if player_pose:
-        draw_silhouette(screen, player_pose, BLACK)  # Disegna la sagoma del giocatore in nero
-        draw_silhouette(screen, random_silhouette, WHITE)  # Disegna la sagoma casuale in bianco
-=======
-    # Disegna la silhouette del giocatore se disponibile, altrimenti il manichino
-if player_pose:
-    draw_silhouette(screen, player_pose)
->>>>>>> Stashed changes
+        draw_silhouette(screen, player_pose, BLACK)
+        draw_silhouette(screen, random_silhouette, WHITE)
 
+    # Set game_ready to True after the first frame is displayed
+    if not game_ready:
+        game_ready = True
+        start_time = time.time()
 
-# Disegna i punti sopra lo sfondo e sopra la silhouette
-draw_points()
+    # Check if the time threshold has been exceeded
+    if game_ready:
+        elapsed_time = time.time() - start_time
+        remaining_time = max(0, time_threshold - elapsed_time)
 
-# Se il giocatore è rilevato, controlla le collisioni
-if player_pose:
-    check_collision(player_pose)
+        # Render the remaining time on the screen
+        time_text = font.render(f"Tempo: {int(remaining_time)}", True, RED)
+        screen.blit(time_text, (10, 10))
 
-# Mostra il punteggio
-score_text = font.render(f"Score: {score}", True, WHITE)
-screen.blit(score_text, (20, 20))
+        if elapsed_time > time_threshold:
+            # Update only the selected body part in the random silhouette
+            if selected_body_part == "Gambe e braccia":
+                random_silhouette = generate_limited_silhouette()
+            elif selected_body_part == "Braccia":
+                random_silhouette["left_elbow"] = (random_silhouette["left_elbow"][0] + random.randint(-20, 20),
+                                                   random_silhouette["left_elbow"][1] + random.randint(-20, 20))
+                random_silhouette["right_elbow"] = (random_silhouette["right_elbow"][0] + random.randint(-20, 20),
+                                                    random_silhouette["right_elbow"][1] + random.randint(-20, 20))
+                random_silhouette["left_hand"] = (random_silhouette["left_hand"][0] + random.randint(-20, 20),
+                                                  random_silhouette["left_hand"][1] + random.randint(-20, 20))
+                random_silhouette["right_hand"] = (random_silhouette["right_hand"][0] + random.randint(-20, 20),
+                                                   random_silhouette["right_hand"][1] + random.randint(-20, 20))
+            elif selected_body_part == "Gambe":
+                random_silhouette["left_knee"] = (random_silhouette["left_knee"][0] + random.randint(-20, 20),
+                                                  random_silhouette["left_knee"][1] + random.randint(-20, 20))
+                random_silhouette["right_knee"] = (random_silhouette["right_knee"][0] + random.randint(-20, 20),
+                                                   random_silhouette["right_knee"][1] + random.randint(-20, 20))
+                random_silhouette["left_foot"] = (random_silhouette["left_foot"][0] + random.randint(-20, 20),
+                                                  random_silhouette["left_foot"][1] + random.randint(-20, 20))
+                random_silhouette["right_foot"] = (random_silhouette["right_foot"][0] + random.randint(-20, 20),
+                                                   random_silhouette["right_foot"][1] + random.randint(-20, 20))
+            elif selected_body_part == "Testa":
+                random_silhouette["head"] = (random_silhouette["head"][0] + random.randint(-20, 20),
+                                             random_silhouette["head"][1] + random.randint(-20, 20))
 
-# Update display
-pygame.display.flip()
-clock.tick(30)
+            start_time = time.time()
+            time_threshold = max(10, time_threshold - 0.5)
+
+    # Update the display
+    pygame.display.flip()
+    clock.tick(60)
 
 cap.release()
 pygame.quit()
