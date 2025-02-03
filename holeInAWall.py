@@ -56,7 +56,7 @@ menu_options = ["Gambe e braccia", "Braccia", "Gambe", "Testa"]
 current_option = 0
 
 def salva_punteggio(punteggio):
-    file_path = "punteggi.csv"
+    file_path = "punteggio.csv"
     with open(file_path, mode='a', newline='') as file:
         writer = csv.writer(file)
         writer.writerow([f"{punteggio}%"])  # Aggiunge il simbolo %
