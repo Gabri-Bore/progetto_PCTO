@@ -113,7 +113,7 @@ def calcola_punteggio(player_pose, silhouette):
             distanza = np.sqrt((px - sx) ** 2 + (py - sy) ** 2)
             
             # Normalizziamo il punteggio tra 0 e 100 
-            punteggio = max(0, 100 - (distanza / 4))
+            punteggio = max(0, 100 - (distanza / 2))
             
             punteggio_totale += punteggio
             punti_confronto += 1
@@ -170,18 +170,18 @@ def generate_limited_silhouette():
     
     return {
         "head": head,
-        "left_shoulder": left_shoulder,
-        "right_shoulder": right_shoulder,
-        "left_elbow": left_elbow,
-        "right_elbow": right_elbow,
-        "left_hand": left_hand,
-        "right_hand": right_hand,
-        "left_hip": left_hip,
-        "right_hip": right_hip,
-        "left_knee": left_knee,
-        "right_knee": right_knee,
-        "left_foot": left_foot,
-        "right_foot": right_foot
+        "left_shoulder": right_shoulder,
+        "right_shoulder": left_shoulder,
+        "left_elbow": right_elbow,
+        "right_elbow": left_elbow,
+        "left_hand": right_hand,
+        "right_hand": left_hand,
+        "left_hip": right_hip,
+        "right_hip": left_hip,
+        "left_knee": right_knee,
+        "right_knee": left_knee,
+        "left_foot": right_foot,
+        "right_foot": left_foot
     }
 
 def draw_silhouette(screen, pose, color=WHITE):
@@ -380,6 +380,7 @@ while game_running:
 
     # Update the display
     pygame.display.update()
+    pygame.display.flip()
     clock.tick(60)
 
 cap.release()
