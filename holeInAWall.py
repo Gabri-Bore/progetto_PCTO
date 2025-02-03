@@ -355,7 +355,7 @@ while game_running:
             time_threshold = max(10, time_threshold - 0.5)
 
     # Update the display
-    pygame.display.flip()
+    pygame.display.update()
     clock.tick(60)
 
 cap.release()
