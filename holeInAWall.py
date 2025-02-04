@@ -369,7 +369,7 @@ while game_running:
                             int(landmarks[mp_pose.PoseLandmark.RIGHT_ANKLE].y * HEIGHT))
         }
 
-    # Clear the screen and draw the background
+    #Clear the screen and draw the background
     screen.blit(auto, (0, 0))
 
     # Draw the player's pose if detected, otherwise draw the random silhouette
