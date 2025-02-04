@@ -188,57 +188,109 @@ def draw_silhouette(screen, pose, color=WHITE):
     if not pose:
         return
     
-    head = pose["head"]
-    
-    if "left_shoulder" not in pose or "right_shoulder" not in pose:
+    # Verifica la presenza dei punti chiave
+    if not all(key in pose for key in ["head", "left_shoulder", "right_shoulder"]):
         return
 
+    # Punti base
+    head = pose["head"]
     left_shoulder = pose["left_shoulder"]
     right_shoulder = pose["right_shoulder"]
     
-    neck = ((left_shoulder[0] + right_shoulder[0]) // 2, (left_shoulder[1] + right_shoulder[1]) // 2)
-
-    left_elbow = pose.get("left_elbow", None)
-    right_elbow = pose.get("right_elbow", None)
-    left_hand = pose.get("left_hand", None)
-    right_hand = pose.get("right_hand", None)
-    left_hip = pose.get("left_hip", None)
-    right_hip = pose.get("right_hip", None)
-    left_knee = pose.get("left_knee", None)
-    right_knee = pose.get("right_knee", None)
-    left_foot = pose.get("left_foot", None)
-    right_foot = pose.get("right_foot", None)
-
-    # Draw the head and neck
-    pygame.draw.circle(screen, color, head, 65)
-    pygame.draw.line(screen, color, head, neck, 20)
-
+    # Calcolo punti anatomici derivati
+    neck = ((left_shoulder[0] + right_shoulder[0]) // 2, 
+            (left_shoulder[1] + right_shoulder[1]) // 2)
+    
+    # Centro del petto (utile per movimenti più naturali)
+    chest_center = (neck[0], neck[1] + 40)
+    
+    # Calcolo della larghezza delle spalle per proporzioni
+    shoulder_width = np.sqrt((left_shoulder[0] - right_shoulder[0])**2 + 
+                           (left_shoulder[1] - right_shoulder[1])**2)
+    head_radius = int(shoulder_width * 0.3)  # Proporzione testa-spalle più naturale
+    
+    # Disegno struttura base
+    pygame.draw.circle(screen, color, head, head_radius)  # Testa ridimensionata
+    pygame.draw.line(screen, color, head, neck, int(head_radius * 0.4))  # Collo più sottile
+    
+    # Spalle e torso
     if left_shoulder and right_shoulder:
-        pygame.draw.line(screen, color, left_shoulder, right_shoulder, 20)
-
-    # Draw arms
-    if left_elbow and left_hand:
-        pygame.draw.line(screen, color, left_shoulder, left_elbow, 20)
-        pygame.draw.line(screen, color, left_elbow, left_hand, 20)
-    if right_elbow and right_hand:
-        pygame.draw.line(screen, color, right_shoulder, right_elbow, 20)
-        pygame.draw.line(screen, color, right_elbow, right_hand, 20)
-
-    # Draw torso and hips
-    if left_hip and right_hip:
-        pygame.draw.line(screen, color, left_shoulder, left_hip, 20)
-        pygame.draw.line(screen, color, right_shoulder, right_hip, 20)
-        pygame.draw.line(screen, color, left_hip, right_hip, 20)
-        torso_points = [left_shoulder, right_shoulder, right_hip, left_hip]
+        # Spalle con curve naturali
+        pygame.draw.line(screen, color, left_shoulder, right_shoulder, int(head_radius * 0.5))
+        
+        # Articolazioni delle spalle
+        pygame.draw.circle(screen, color, left_shoulder, int(head_radius * 0.2))
+        pygame.draw.circle(screen, color, right_shoulder, int(head_radius * 0.2))
+    
+    # Braccia con articolazioni
+    if "left_elbow" in pose and "left_hand" in pose:
+        left_elbow = pose["left_elbow"]
+        left_hand = pose["left_hand"]
+        
+        # Braccio superiore
+        pygame.draw.line(screen, color, left_shoulder, left_elbow, int(head_radius * 0.4))
+        # Avambraccio
+        pygame.draw.line(screen, color, left_elbow, left_hand, int(head_radius * 0.35))
+        # Articolazione gomito
+        pygame.draw.circle(screen, color, left_elbow, int(head_radius * 0.15))
+        # Polso
+        pygame.draw.circle(screen, color, left_hand, int(head_radius * 0.12))
+    
+    if "right_elbow" in pose and "right_hand" in pose:
+        right_elbow = pose["right_elbow"]
+        right_hand = pose["right_hand"]
+        
+        pygame.draw.line(screen, color, right_shoulder, right_elbow, int(head_radius * 0.4))
+        pygame.draw.line(screen, color, right_elbow, right_hand, int(head_radius * 0.35))
+        pygame.draw.circle(screen, color, right_elbow, int(head_radius * 0.15))
+        pygame.draw.circle(screen, color, right_hand, int(head_radius * 0.12))
+    
+    # Torso e fianchi con proporzioni migliorate
+    if "left_hip" in pose and "right_hip" in pose:
+        left_hip = pose["left_hip"]
+        right_hip = pose["right_hip"]
+        
+        # Calcolo punto centrale dei fianchi
+        hip_center = ((left_hip[0] + right_hip[0]) // 2, 
+                     (left_hip[1] + right_hip[1]) // 2)
+        
+        # Torso con curve naturali
+        torso_points = [
+            left_shoulder,
+            right_shoulder,
+            (right_hip[0], right_hip[1] - 5),  # Leggera curvatura
+            right_hip,
+            left_hip,
+            (left_hip[0], left_hip[1] - 5)     # Leggera curvatura
+        ]
         pygame.draw.polygon(screen, color, torso_points)
-
-    # Draw legs
-    if left_knee and left_foot:
-        pygame.draw.line(screen, color, left_hip, left_knee, 20)
-        pygame.draw.line(screen, color, left_knee, left_foot, 20)
-    if right_knee and right_foot:
-        pygame.draw.line(screen, color, right_hip, right_knee, 20)
-        pygame.draw.line(screen, color, right_knee, right_foot, 20)
+        
+        # Articolazioni dei fianchi
+        pygame.draw.circle(screen, color, left_hip, int(head_radius * 0.18))
+        pygame.draw.circle(screen, color, right_hip, int(head_radius * 0.18))
+    
+    # Gambe con proporzioni corrette e articolazioni
+    if "left_knee" in pose and "left_foot" in pose:
+        left_knee = pose["left_knee"]
+        left_foot = pose["left_foot"]
+        
+        # Coscia
+        pygame.draw.line(screen, color, left_hip, left_knee, int(head_radius * 0.45))
+        # Polpaccio
+        pygame.draw.line(screen, color, left_knee, left_foot, int(head_radius * 0.4))
+        # Articolazione ginocchio
+        pygame.draw.circle(screen, color, left_knee, int(head_radius * 0.15))
+        # Caviglia
+        pygame.draw.circle(screen, color, left_foot, int(head_radius * 0.12))
+    
+    if "right_knee" in pose and "right_foot" in pose:
+        right_knee = pose["right_knee"]
+        right_foot = pose["right_foot"]
+        
+        pygame.draw.line(screen, color, right_hip, right_knee, int(head_radius * 0.45))
+        pygame.draw.line(screen, color, right_knee, right_foot, int(head_radius * 0.4))
+        pygame.draw.circle(screen, color, right_knee, int(head_radius * 0.15))
+        pygame.draw.circle(screen, color, right_foot, int(head_radius * 0.12))
 
 # Initialize the camera
 cap = cv2.VideoCapture(0)
