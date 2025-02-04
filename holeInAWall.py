@@ -343,7 +343,7 @@ while game_running:
         remaining_time = max(0, time_threshold - elapsed_time)
 
         # Render the remaining time on the screen
-        time_text = font.render(f"Tempo: {int(remaining_time)}", True, RED)
+        time_text = font.render(f"Tempo: {int(remaining_time)}", True, GREEN)
         screen.blit(time_text, (10, 10))
 
         if elapsed_time > time_threshold:
