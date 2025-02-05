@@ -38,7 +38,7 @@ mp_pose = mp.solutions.pose
 pose = mp_pose.Pose(min_detection_confidence=0.5, min_tracking_confidence=0.5)
 
 # Time threshold variables
-initial_time_threshold = 10  # 20 seconds initially
+initial_time_threshold = 10  # 10 seconds initially
 time_threshold = initial_time_threshold
 start_time = time.time()
 
