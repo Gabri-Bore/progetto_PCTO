@@ -188,18 +188,18 @@ def generate_limited_silhouette():
     
     return {
         "head": head,
-        "left_shoulder": left_shoulder,
-        "right_shoulder": right_shoulder,
-        "left_elbow": left_elbow,
-        "right_elbow": right_elbow,
-        "left_hand": left_hand,
-        "right_hand": right_hand,
-        "left_hip": left_hip,
-        "right_hip": right_hip,
-        "left_knee": left_knee,
-        "right_knee": right_knee,
-        "left_foot": left_foot,
-        "right_foot": right_foot
+        "left_shoulder": right_shoulder,
+        "right_shoulder": left_shoulder,
+        "left_elbow": right_elbow,
+        "right_elbow": left_elbow,
+        "left_hand": right_hand,
+        "right_hand": left_hand,
+        "left_hip": right_hip,
+        "right_hip": left_hip,
+        "left_knee": right_knee,
+        "right_knee": left_knee,
+        "left_foot": right_foot,
+        "right_foot": left_foot
     }
 
 def draw_silhouette(screen, pose, color=WHITE):
