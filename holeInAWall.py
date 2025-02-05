@@ -225,11 +225,11 @@ def draw_silhouette(screen, pose, color=WHITE):
     head_radius = int(shoulder_width * 0.3)
     
     # Spessore linee aumentato
-    line_thickness = int(head_radius * 0.6)  # Aumentato lo spessore base
-    joint_radius = int(head_radius * 0.3)    # Aumentato il raggio delle articolazioni
+    line_thickness = int(head_radius * 0.7)  # Aumentato lo spessore base
+    joint_radius = int(head_radius * 0.4)    # Aumentato il raggio delle articolazioni
     
     # Disegno struttura base con linee più spesse
-    pygame.draw.circle(screen, color, head, head_radius + line_thickness//2)
+    pygame.draw.circle(screen, color, head, head_radius + line_thickness//2.25)
     pygame.draw.line(screen, color, head, neck, line_thickness)
     
     # Spalle e torso
@@ -381,7 +381,7 @@ while game_running:
         draw_silhouette(screen, random_silhouette, WHITE)
     
     # Aggiungi i feedback colorati sui punti
-    draw_feedback_points(screen, player_pose, random_silhouette, threshold=40)
+    draw_feedback_points(screen, player_pose, random_silhouette, threshold=30)
     
     # Calcola il punteggio, etc...
     punteggio = calcola_punteggio(player_pose, random_silhouette)
