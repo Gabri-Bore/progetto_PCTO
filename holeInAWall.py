@@ -133,55 +133,73 @@ def draw_menu():
 
 def generate_limited_silhouette():
     center_x, center_y = WIDTH // 2, HEIGHT // 2
-    offset_range = 20
-
-    head = (center_x + random.randint(-offset_range, offset_range), 
-            center_y - 150 + random.randint(-offset_range, offset_range))
     
-    left_shoulder = (center_x - 50 + random.randint(-offset_range, offset_range), 
-                     center_y - 50 + random.randint(-offset_range, offset_range))
-    right_shoulder = (center_x + 50 + random.randint(-offset_range, offset_range), 
-                      center_y - 50 + random.randint(-offset_range, offset_range))
+    # Definiamo angoli naturali per le articolazioni
+    shoulder_angle = random.uniform(-30, 30)  # Angolo delle spalle rispetto all'orizzontale
+    elbow_angle = random.uniform(0, 90)      # Angolo dei gomiti (evita posizioni innaturali)
+    hip_angle = random.uniform(-20, 20)      # Angolo dei fianchi
+    knee_angle = random.uniform(0, 60)       # Angolo delle ginocchia
     
-    left_elbow = (center_x - 100 + random.randint(-offset_range, offset_range), 
-                  center_y + 50 + random.randint(-offset_range, offset_range))
-    right_elbow = (center_x + 100 + random.randint(-offset_range, offset_range), 
-                   center_y + 50 + random.randint(-offset_range, offset_range))
+    # Lunghezze degli arti aumentate del 50% (proporzioni mantenute)
+    arm_length = 120      # Era 80
+    forearm_length = 105  # Era 70
+    leg_length = 150      # Era 100
+    shin_length = 135     # Era 90
     
-    left_hand = (center_x - 150 + random.randint(-offset_range, offset_range), 
-                 center_y + 150 + random.randint(-offset_range, offset_range))
-    right_hand = (center_x + 150 + random.randint(-offset_range, offset_range), 
-                  center_y + 150 + random.randint(-offset_range, offset_range))
+    # Calcolo posizione testa (più in alto e più grande)
+    head = (center_x + random.randint(-30, 30), 
+            center_y - 225 + random.randint(-15, 15))  # Era -150
     
-    left_hip = (center_x - 50 + random.randint(-offset_range, offset_range), 
-                center_y + 100 + random.randint(-offset_range, offset_range))
-    right_hip = (center_x + 50 + random.randint(-offset_range, offset_range), 
-                 center_y + 100 + random.randint(-offset_range, offset_range))
+    # Calcolo spalle usando l'angolo (aumentata la distanza tra le spalle)
+    shoulder_base_y = head[1] + 75  # Era 50
+    left_shoulder = (center_x - 75 * np.cos(np.radians(shoulder_angle)),  # Era 50
+                    shoulder_base_y + 75 * np.sin(np.radians(shoulder_angle)))
+    right_shoulder = (center_x + 75 * np.cos(np.radians(shoulder_angle)),
+                     shoulder_base_y + 75 * np.sin(np.radians(shoulder_angle)))
     
-    left_knee = (center_x - 50 + random.randint(-offset_range, offset_range), 
-                 center_y + 200 + random.randint(-offset_range, offset_range))
-    right_knee = (center_x + 50 + random.randint(-offset_range, offset_range), 
-                  center_y + 200 + random.randint(-offset_range, offset_range))
+    # Calcolo gomiti usando l'angolo
+    left_elbow = (left_shoulder[0] - arm_length * np.cos(np.radians(elbow_angle)),
+                 left_shoulder[1] + arm_length * np.sin(np.radians(elbow_angle)))
+    right_elbow = (right_shoulder[0] + arm_length * np.cos(np.radians(elbow_angle)),
+                  right_shoulder[1] + arm_length * np.sin(np.radians(elbow_angle)))
     
-    left_foot = (center_x - 50 + random.randint(-offset_range, offset_range), 
-                 center_y + 300 + random.randint(-offset_range, offset_range))
-    right_foot = (center_x + 50 + random.randint(-offset_range, offset_range), 
-                  center_y + 300 + random.randint(-offset_range, offset_range))
+    # Calcolo mani (estensione naturale dei gomiti)
+    left_hand = (left_elbow[0] - forearm_length * np.cos(np.radians(elbow_angle - 20)),
+                left_elbow[1] + forearm_length * np.sin(np.radians(elbow_angle - 20)))
+    right_hand = (right_elbow[0] + forearm_length * np.cos(np.radians(elbow_angle - 20)),
+                 right_elbow[1] + forearm_length * np.sin(np.radians(elbow_angle - 20)))
+    
+    # Calcolo fianchi (aumentata la distanza tra i fianchi e dalle spalle)
+    hip_base_y = shoulder_base_y + 180  # Era 120
+    left_hip = (center_x - 60 * np.cos(np.radians(hip_angle)),  # Era 40
+                hip_base_y + 60 * np.sin(np.radians(hip_angle)))
+    right_hip = (center_x + 60 * np.cos(np.radians(hip_angle)),
+                 hip_base_y + 60 * np.sin(np.radians(hip_angle)))
+    
+    # Calcolo ginocchia
+    left_knee = (left_hip[0] - leg_length * np.sin(np.radians(knee_angle)),
+                left_hip[1] + leg_length * np.cos(np.radians(knee_angle)))
+    right_knee = (right_hip[0] + leg_length * np.sin(np.radians(knee_angle)),
+                 right_hip[1] + leg_length * np.cos(np.radians(knee_angle)))
+    
+    # Calcolo piedi
+    left_foot = (left_knee[0], left_knee[1] + shin_length)
+    right_foot = (right_knee[0], right_knee[1] + shin_length)
     
     return {
         "head": head,
-        "left_shoulder": right_shoulder,
-        "right_shoulder": left_shoulder,
-        "left_elbow": right_elbow,
-        "right_elbow": left_elbow,
-        "left_hand": right_hand,
-        "right_hand": left_hand,
-        "left_hip": right_hip,
-        "right_hip": left_hip,
-        "left_knee": right_knee,
-        "right_knee": left_knee,
-        "left_foot": right_foot,
-        "right_foot": left_foot
+        "left_shoulder": left_shoulder,
+        "right_shoulder": right_shoulder,
+        "left_elbow": left_elbow,
+        "right_elbow": right_elbow,
+        "left_hand": left_hand,
+        "right_hand": right_hand,
+        "left_hip": left_hip,
+        "right_hip": right_hip,
+        "left_knee": left_knee,
+        "right_knee": right_knee,
+        "left_foot": left_foot,
+        "right_foot": right_foot
     }
 
 def draw_silhouette(screen, pose, color=WHITE):
@@ -201,96 +219,80 @@ def draw_silhouette(screen, pose, color=WHITE):
     neck = ((left_shoulder[0] + right_shoulder[0]) // 2, 
             (left_shoulder[1] + right_shoulder[1]) // 2)
     
-    # Centro del petto (utile per movimenti più naturali)
-    chest_center = (neck[0], neck[1] + 40)
-    
     # Calcolo della larghezza delle spalle per proporzioni
     shoulder_width = np.sqrt((left_shoulder[0] - right_shoulder[0])**2 + 
                            (left_shoulder[1] - right_shoulder[1])**2)
-    head_radius = int(shoulder_width * 0.3)  # Proporzione testa-spalle più naturale
+    head_radius = int(shoulder_width * 0.3)
     
-    # Disegno struttura base
-    pygame.draw.circle(screen, color, head, head_radius)  # Testa ridimensionata
-    pygame.draw.line(screen, color, head, neck, int(head_radius * 0.4))  # Collo più sottile
+    # Spessore linee aumentato
+    line_thickness = int(head_radius * 0.6)  # Aumentato lo spessore base
+    joint_radius = int(head_radius * 0.3)    # Aumentato il raggio delle articolazioni
+    
+    # Disegno struttura base con linee più spesse
+    pygame.draw.circle(screen, color, head, head_radius + line_thickness//2)
+    pygame.draw.line(screen, color, head, neck, line_thickness)
     
     # Spalle e torso
     if left_shoulder and right_shoulder:
-        # Spalle con curve naturali
-        pygame.draw.line(screen, color, left_shoulder, right_shoulder, int(head_radius * 0.5))
-        
-        # Articolazioni delle spalle
-        pygame.draw.circle(screen, color, left_shoulder, int(head_radius * 0.2))
-        pygame.draw.circle(screen, color, right_shoulder, int(head_radius * 0.2))
+        pygame.draw.line(screen, color, left_shoulder, right_shoulder, line_thickness)
+        pygame.draw.circle(screen, color, left_shoulder, joint_radius)
+        pygame.draw.circle(screen, color, right_shoulder, joint_radius)
     
-    # Braccia con articolazioni
+    # Braccia con articolazioni più evidenti
     if "left_elbow" in pose and "left_hand" in pose:
         left_elbow = pose["left_elbow"]
         left_hand = pose["left_hand"]
         
-        # Braccio superiore
-        pygame.draw.line(screen, color, left_shoulder, left_elbow, int(head_radius * 0.4))
-        # Avambraccio
-        pygame.draw.line(screen, color, left_elbow, left_hand, int(head_radius * 0.35))
-        # Articolazione gomito
-        pygame.draw.circle(screen, color, left_elbow, int(head_radius * 0.15))
-        # Polso
-        pygame.draw.circle(screen, color, left_hand, int(head_radius * 0.12))
+        pygame.draw.line(screen, color, left_shoulder, left_elbow, line_thickness)
+        pygame.draw.line(screen, color, left_elbow, left_hand, line_thickness)
+        pygame.draw.circle(screen, color, left_elbow, joint_radius)
+        pygame.draw.circle(screen, color, left_hand, joint_radius)
     
     if "right_elbow" in pose and "right_hand" in pose:
         right_elbow = pose["right_elbow"]
         right_hand = pose["right_hand"]
         
-        pygame.draw.line(screen, color, right_shoulder, right_elbow, int(head_radius * 0.4))
-        pygame.draw.line(screen, color, right_elbow, right_hand, int(head_radius * 0.35))
-        pygame.draw.circle(screen, color, right_elbow, int(head_radius * 0.15))
-        pygame.draw.circle(screen, color, right_hand, int(head_radius * 0.12))
+        pygame.draw.line(screen, color, right_shoulder, right_elbow, line_thickness)
+        pygame.draw.line(screen, color, right_elbow, right_hand, line_thickness)
+        pygame.draw.circle(screen, color, right_elbow, joint_radius)
+        pygame.draw.circle(screen, color, right_hand, joint_radius)
     
-    # Torso e fianchi con proporzioni migliorate
+    # Torso più definito
     if "left_hip" in pose and "right_hip" in pose:
         left_hip = pose["left_hip"]
         right_hip = pose["right_hip"]
         
-        # Calcolo punto centrale dei fianchi
-        hip_center = ((left_hip[0] + right_hip[0]) // 2, 
-                     (left_hip[1] + right_hip[1]) // 2)
-        
-        # Torso con curve naturali
+        # Torso con spessore aumentato
         torso_points = [
             left_shoulder,
             right_shoulder,
-            (right_hip[0], right_hip[1] - 5),  # Leggera curvatura
             right_hip,
-            left_hip,
-            (left_hip[0], left_hip[1] - 5)     # Leggera curvatura
+            left_hip
         ]
         pygame.draw.polygon(screen, color, torso_points)
         
-        # Articolazioni dei fianchi
-        pygame.draw.circle(screen, color, left_hip, int(head_radius * 0.18))
-        pygame.draw.circle(screen, color, right_hip, int(head_radius * 0.18))
+        # Articolazioni dei fianchi più evidenti
+        pygame.draw.circle(screen, color, left_hip, joint_radius)
+        pygame.draw.circle(screen, color, right_hip, joint_radius)
     
-    # Gambe con proporzioni corrette e articolazioni
+    # Gambe con spessore aumentato
     if "left_knee" in pose and "left_foot" in pose:
         left_knee = pose["left_knee"]
         left_foot = pose["left_foot"]
         
-        # Coscia
-        pygame.draw.line(screen, color, left_hip, left_knee, int(head_radius * 0.45))
-        # Polpaccio
-        pygame.draw.line(screen, color, left_knee, left_foot, int(head_radius * 0.4))
-        # Articolazione ginocchio
-        pygame.draw.circle(screen, color, left_knee, int(head_radius * 0.15))
-        # Caviglia
-        pygame.draw.circle(screen, color, left_foot, int(head_radius * 0.12))
+        pygame.draw.line(screen, color, left_hip, left_knee, line_thickness)
+        pygame.draw.line(screen, color, left_knee, left_foot, line_thickness)
+        pygame.draw.circle(screen, color, left_knee, joint_radius)
+        pygame.draw.circle(screen, color, left_foot, joint_radius)
     
     if "right_knee" in pose and "right_foot" in pose:
         right_knee = pose["right_knee"]
         right_foot = pose["right_foot"]
         
-        pygame.draw.line(screen, color, right_hip, right_knee, int(head_radius * 0.45))
-        pygame.draw.line(screen, color, right_knee, right_foot, int(head_radius * 0.4))
-        pygame.draw.circle(screen, color, right_knee, int(head_radius * 0.15))
-        pygame.draw.circle(screen, color, right_foot, int(head_radius * 0.12))
+        pygame.draw.line(screen, color, right_hip, right_knee, line_thickness)
+        pygame.draw.line(screen, color, right_knee, right_foot, line_thickness)
+        pygame.draw.circle(screen, color, right_knee, joint_radius)
+        pygame.draw.circle(screen, color, right_foot, joint_radius)
 
 # Initialize the camera
 cap = cv2.VideoCapture(0)
