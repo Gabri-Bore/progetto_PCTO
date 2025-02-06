@@ -384,17 +384,27 @@ while game_running:
         start_time = time.time()
 
     # Check if the time threshold has been exceeded
+        # Controlla se il tempo soglia è stato superato
     if game_ready:
         elapsed_time = time.time() - start_time
         remaining_time = max(0, time_threshold - elapsed_time)
 
-        # Render the remaining time on the screen
+        # Render del tempo rimanente
         time_text = font.render(f"Tempo: {int(remaining_time)}", True, GREEN)
         screen.blit(time_text, (10, 10))
 
-        if elapsed_time > time_threshold:
+        # Se il tempo è scaduto, aggiorna la silhouette e resetta il timer
+        if remaining_time <= 0:
             print(f"Punteggio finale: {punteggio}")  # Debug
-            salva_punteggio(punteggio)  # Salva il punteggio nel CSV
+            salva_punteggio(punteggio)  # Salva il punteggio
+
+            # Genera una nuova silhouette casuale
+            random_silhouette = generate_random_silhouette()
+            
+            # Ripristina il timer
+            start_time = time.time()
+            time_threshold = max(10, time_threshold - 0.5)
+
 
             # Update only the selected body part in the random silhouette
             if selected_body_part == "Gambe e braccia":
