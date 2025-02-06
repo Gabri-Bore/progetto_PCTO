@@ -131,203 +131,76 @@ def draw_menu():
         screen.blit(text, (WIDTH // 2 - text.get_width() // 2, HEIGHT // 2 - 100 + i * 100))
     pygame.display.flip()
 
-def generate_fixed_silhouette(difficulty_level=None):
+def generate_random_silhouette():
     center_x, center_y = WIDTH // 2, HEIGHT // 2
     
-    # Dizionario delle pose organizzate per difficoltà (1: più facile -> 3: più difficile)
-    poses = {
-        # LIVELLO 1 - Pose base, molto semplici
-        "rest_pose": {
-            "difficulty": 1,
-            "description": "Braccia lungo i fianchi, posizione naturale",
-            "head": (center_x, center_y - 225),
-            "left_shoulder": (center_x - 75, center_y - 150),
-            "right_shoulder": (center_x + 75, center_y - 150),
-            "left_elbow": (center_x - 75, center_y - 30),
-            "right_elbow": (center_x + 75, center_y - 30),
-            "left_hand": (center_x - 75, center_y + 75),
-            "right_hand": (center_x + 75, center_y + 75),
-            "left_hip": (center_x - 50, center_y + 30),
-            "right_hip": (center_x + 50, center_y + 30),
-            "left_knee": (center_x - 50, center_y + 180),
-            "right_knee": (center_x + 50, center_y + 180),
-            "left_foot": (center_x - 50, center_y + 315),
-            "right_foot": (center_x + 50, center_y + 315)
-        },
-        
-        "t_pose": {
-            "difficulty": 1,
-            "description": "Braccia distese orizzontalmente, gambe leggermente divaricate",
-            "head": (center_x, center_y - 225),
-            "left_shoulder": (center_x - 75, center_y - 150),
-            "right_shoulder": (center_x + 75, center_y - 150),
-            "left_elbow": (center_x - 195, center_y - 150),
-            "right_elbow": (center_x + 195, center_y - 150),
-            "left_hand": (center_x - 300, center_y - 150),
-            "right_hand": (center_x + 300, center_y - 150),
-            "left_hip": (center_x - 50, center_y + 30),
-            "right_hip": (center_x + 50, center_y + 30),
-            "left_knee": (center_x - 50, center_y + 180),
-            "right_knee": (center_x + 50, center_y + 180),
-            "left_foot": (center_x - 50, center_y + 315),
-            "right_foot": (center_x + 50, center_y + 315)
-        },
-
-        "arms_forward": {
-            "difficulty": 1,
-            "description": "Braccia distese in avanti",
-            "head": (center_x, center_y - 225),
-            "left_shoulder": (center_x - 75, center_y - 150),
-            "right_shoulder": (center_x + 75, center_y - 150),
-            "left_elbow": (center_x - 75, center_y - 150),
-            "right_elbow": (center_x + 75, center_y - 150),
-            "left_hand": (center_x - 75, center_y - 150),
-            "right_hand": (center_x + 75, center_y - 150),
-            "left_hip": (center_x - 40, center_y + 30),
-            "right_hip": (center_x + 40, center_y + 30),
-            "left_knee": (center_x - 40, center_y + 180),
-            "right_knee": (center_x + 40, center_y + 180),
-            "left_foot": (center_x - 40, center_y + 315),
-            "right_foot": (center_x + 40, center_y + 315)
-        },
-
-        # LIVELLO 2 - Pose intermedie, richiedono più coordinazione
-        "raised_arms": {
-            "difficulty": 2,
-            "description": "Braccia alzate, gambe unite",
-            "head": (center_x, center_y - 225),
-            "left_shoulder": (center_x - 75, center_y - 150),
-            "right_shoulder": (center_x + 75, center_y - 150),
-            "left_elbow": (center_x - 75, center_y - 270),
-            "right_elbow": (center_x + 75, center_y - 270),
-            "left_hand": (center_x - 75, center_y - 375),
-            "right_hand": (center_x + 75, center_y - 375),
-            "left_hip": (center_x - 30, center_y + 30),
-            "right_hip": (center_x + 30, center_y + 30),
-            "left_knee": (center_x - 30, center_y + 180),
-            "right_knee": (center_x + 30, center_y + 180),
-            "left_foot": (center_x - 30, center_y + 315),
-            "right_foot": (center_x + 30, center_y + 315)
-        },
-
-        "wide_stance": {
-            "difficulty": 2,
-            "description": "Gambe divaricate e braccia lungo i fianchi",
-            "head": (center_x, center_y - 225),
-            "left_shoulder": (center_x - 75, center_y - 150),
-            "right_shoulder": (center_x + 75, center_y - 150),
-            "left_elbow": (center_x - 75, center_y - 30),
-            "right_elbow": (center_x + 75, center_y - 30),
-            "left_hand": (center_x - 75, center_y + 75),
-            "right_hand": (center_x + 75, center_y + 75),
-            "left_hip": (center_x - 75, center_y + 30),
-            "right_hip": (center_x + 75, center_y + 30),
-            "left_knee": (center_x - 100, center_y + 180),
-            "right_knee": (center_x + 100, center_y + 180),
-            "left_foot": (center_x - 125, center_y + 315),
-            "right_foot": (center_x + 125, center_y + 315)
-        },
-
-        "bent_elbows": {
-            "difficulty": 2,
-            "description": "Braccia piegate ai gomiti",
-            "head": (center_x, center_y - 225),
-            "left_shoulder": (center_x - 75, center_y - 150),
-            "right_shoulder": (center_x + 75, center_y - 150),
-            "left_elbow": (center_x - 150, center_y - 150),
-            "right_elbow": (center_x + 150, center_y - 150),
-            "left_hand": (center_x - 150, center_y - 250),
-            "right_hand": (center_x + 150, center_y - 250),
-            "left_hip": (center_x - 50, center_y + 30),
-            "right_hip": (center_x + 50, center_y + 30),
-            "left_knee": (center_x - 50, center_y + 180),
-            "right_knee": (center_x + 50, center_y + 180),
-            "left_foot": (center_x - 50, center_y + 315),
-            "right_foot": (center_x + 50, center_y + 315)
-        },
-
-        # LIVELLO 3 - Pose più complesse, richiedono maggiore controllo
-        "diagonal_arms": {
-            "difficulty": 3,
-            "description": "Braccia in diagonale verso l'alto",
-            "head": (center_x, center_y - 225),
-            "left_shoulder": (center_x - 75, center_y - 150),
-            "right_shoulder": (center_x + 75, center_y - 150),
-            "left_elbow": (center_x - 150, center_y - 225),
-            "right_elbow": (center_x + 150, center_y - 225),
-            "left_hand": (center_x - 225, center_y - 300),
-            "right_hand": (center_x + 225, center_y - 300),
-            "left_hip": (center_x - 40, center_y + 30),
-            "right_hip": (center_x + 40, center_y + 30),
-            "left_knee": (center_x - 40, center_y + 180),
-            "right_knee": (center_x + 40, center_y + 180),
-            "left_foot": (center_x - 40, center_y + 315),
-            "right_foot": (center_x + 40, center_y + 315)
-        },
-
-        "asymmetric_arms": {
-            "difficulty": 3,
-            "description": "Un braccio alzato, uno lungo il fianco",
-            "head": (center_x, center_y - 225),
-            "left_shoulder": (center_x - 75, center_y - 150),
-            "right_shoulder": (center_x + 75, center_y - 150),
-            "left_elbow": (center_x - 75, center_y - 270),
-            "right_elbow": (center_x + 75, center_y - 30),
-            "left_hand": (center_x - 75, center_y - 375),
-            "right_hand": (center_x + 75, center_y + 75),
-            "left_hip": (center_x - 40, center_y + 30),
-            "right_hip": (center_x + 40, center_y + 30),
-            "left_knee": (center_x - 40, center_y + 180),
-            "right_knee": (center_x + 40, center_y + 180),
-            "left_foot": (center_x - 40, center_y + 315),
-            "right_foot": (center_x + 40, center_y + 315)
-        },
-
-        "wide_arms_bent": {
-            "difficulty": 3,
-            "description": "Braccia allargate e piegate, gambe divaricate",
-            "head": (center_x, center_y - 225),
-            "left_shoulder": (center_x - 75, center_y - 150),
-            "right_shoulder": (center_x + 75, center_y - 150),
-            "left_elbow": (center_x - 175, center_y - 150),
-            "right_elbow": (center_x + 175, center_y - 150),
-            "left_hand": (center_x - 175, center_y - 250),
-            "right_hand": (center_x + 175, center_y - 250),
-            "left_hip": (center_x - 75, center_y + 30),
-            "right_hip": (center_x + 75, center_y + 30),
-            "left_knee": (center_x - 100, center_y + 180),
-            "right_knee": (center_x + 100, center_y + 180),
-            "left_foot": (center_x - 125, center_y + 315),
-            "right_foot": (center_x + 125, center_y + 315)
-        },
-
-        "victory_pose": {
-            "difficulty": 3,
-            "description": "Braccia in V verso l'alto, gambe leggermente divaricate",
-            "head": (center_x, center_y - 225),
-            "left_shoulder": (center_x - 75, center_y - 150),
-            "right_shoulder": (center_x + 75, center_y - 150),
-            "left_elbow": (center_x - 150, center_y - 300),
-            "right_elbow": (center_x + 150, center_y - 300),
-            "left_hand": (center_x - 200, center_y - 400),
-            "right_hand": (center_x + 200, center_y - 400),
-            "left_hip": (center_x - 50, center_y + 30),
-            "right_hip": (center_x + 50, center_y + 30),
-            "left_knee": (center_x - 75, center_y + 180),
-            "right_knee": (center_x + 75, center_y + 180),
-            "left_foot": (center_x - 100, center_y + 315),
-            "right_foot": (center_x + 100, center_y + 315)
-        }
+    # Definiamo angoli naturali per le articolazioni
+    shoulder_angle = random.uniform(-30, 30)  # Angolo delle spalle rispetto all'orizzontale
+    elbow_angle = random.uniform(0, 90)      # Angolo dei gomiti (evita posizioni innaturali)
+    hip_angle = random.uniform(-20, 20)      # Angolo dei fianchi
+    knee_angle = random.uniform(0, 60)       # Angolo delle ginocchia
+    
+    # Lunghezze degli arti aumentate del 50% (proporzioni mantenute)
+    arm_length = 120      # Era 80
+    forearm_length = 105  # Era 70
+    leg_length = 150      # Era 100
+    shin_length = 135     # Era 90
+    
+    # Calcolo posizione testa (più in alto e più grande)
+    head = (center_x + random.randint(-30, 30), 
+            center_y - 225 + random.randint(-15, 15))  # Era -150
+    
+    # Calcolo spalle usando l'angolo (aumentata la distanza tra le spalle)
+    shoulder_base_y = head[1] + 75  # Era 50
+    left_shoulder = (center_x - 75 * np.cos(np.radians(shoulder_angle)),  # Era 50
+                    shoulder_base_y + 75 * np.sin(np.radians(shoulder_angle)))
+    right_shoulder = (center_x + 75 * np.cos(np.radians(shoulder_angle)),
+                     shoulder_base_y + 75 * np.sin(np.radians(shoulder_angle)))
+    
+    # Calcolo gomiti usando l'angolo
+    left_elbow = (left_shoulder[0] - arm_length * np.cos(np.radians(elbow_angle)),
+                 left_shoulder[1] + arm_length * np.sin(np.radians(elbow_angle)))
+    right_elbow = (right_shoulder[0] + arm_length * np.cos(np.radians(elbow_angle)),
+                  right_shoulder[1] + arm_length * np.sin(np.radians(elbow_angle)))
+    
+    # Calcolo mani (estensione naturale dei gomiti)
+    left_hand = (left_elbow[0] - forearm_length * np.cos(np.radians(elbow_angle - 20)),
+                left_elbow[1] + forearm_length * np.sin(np.radians(elbow_angle - 20)))
+    right_hand = (right_elbow[0] + forearm_length * np.cos(np.radians(elbow_angle - 20)),
+                 right_elbow[1] + forearm_length * np.sin(np.radians(elbow_angle - 20)))
+    
+    # Calcolo fianchi (aumentata la distanza tra i fianchi e dalle spalle)
+    hip_base_y = shoulder_base_y + 180  # Era 120
+    left_hip = (center_x - 60 * np.cos(np.radians(hip_angle)),  # Era 40
+                hip_base_y + 60 * np.sin(np.radians(hip_angle)))
+    right_hip = (center_x + 60 * np.cos(np.radians(hip_angle)),
+                 hip_base_y + 60 * np.sin(np.radians(hip_angle)))
+    
+    # Calcolo ginocchia
+    left_knee = (left_hip[0] - leg_length * np.sin(np.radians(knee_angle)),
+                left_hip[1] + leg_length * np.cos(np.radians(knee_angle)))
+    right_knee = (right_hip[0] + leg_length * np.sin(np.radians(knee_angle)),
+                 right_hip[1] + leg_length * np.cos(np.radians(knee_angle)))
+    
+    # Calcolo piedi
+    left_foot = (left_knee[0], left_knee[1] + shin_length)
+    right_foot = (right_knee[0], right_knee[1] + shin_length)
+    
+    return {
+        "head": head,
+        "left_shoulder": right_shoulder,
+        "right_shoulder": left_shoulder,
+        "left_elbow": right_elbow,
+        "right_elbow": left_elbow,
+        "left_hand": right_hand,
+        "right_hand": left_hand,
+        "left_hip": right_hip,
+        "right_hip": left_hip,
+        "left_knee": right_knee,
+        "right_knee": left_knee,
+        "left_foot": right_foot,
+        "right_foot": left_foot
     }
-    
-    if difficulty_level is not None:
-        # Filtra le pose per livello di difficoltà
-        available_poses = [pose for pose in poses.values() if pose["difficulty"] == difficulty_level]
-        if available_poses:
-            return random.choice(available_poses)
-    
-    # Se non è specificato un livello o non ci sono pose per quel livello, sceglie tra tutte
-    return random.choice(list(poses.values()))
 
 def draw_silhouette(screen, pose, color=WHITE):
     if not pose:
@@ -427,7 +300,7 @@ ret, frame = cap.read()
 FRAME_HEIGHT, FRAME_WIDTH = frame.shape[:2]
 
 # Generate a random silhouette with limited movements
-random_silhouette = generate_fixed_silhouette()
+random_silhouette = generate_random_silhouette()
 
 # Menu loop
 menu_running = True
@@ -533,7 +406,7 @@ while game_running:
 
             # Update only the selected body part in the random silhouette
             if selected_body_part == "Gambe e braccia":
-                random_silhouette = generate_fixed_silhouette()
+                random_silhouette = generate_random_silhouette()
             elif selected_body_part == "Braccia":
                 random_silhouette["left_elbow"] = (random_silhouette["left_elbow"][0] + random.randint(-20, 20),
                                                    random_silhouette["left_elbow"][1] + random.randint(-20, 20))
