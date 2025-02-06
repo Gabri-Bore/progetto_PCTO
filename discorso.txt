@@ -1,0 +1,25 @@
+DISCORSO: 
+Buongiorno siamo i TECHNOBROS della 4^ C ROB. 
+Vi presentiamo il nostro progetto iniziando a parlarvi della sclerosi multipla e a quale stadio noi abbiamo scelto per sviluppare il gioco. 
+La sclerosi multipla è una malattia neurodegenerativa che colpisce il sistema nervoso centrale. È caratterizzata da una reazione anomala delle difese immunitarie per questo rientra nelle patologie autoimmuni.
+
+Ci sono 4 stadi:
+- Recidivamente remittente 
+- Secondariamente progressiva (mini descrizione)
+- Primariamente progressiva
+- Recidivamente progressiva
+
+Il nostro obbiettivo è quello di far giocare i pazienti sperando di farli divertire, al tempo stesso monitorare l’avanzamento della loro malattia. La nostra idea è quella del gioco “hole in a wall”.
+Abbiamo sviluppato questo gioco in modo che dopo un certo periodo di tempo l’immagine venga cambiata e il paziente dovrà cercare di replicarla.
+Abbiamo diverse modalità di gioco: 
+-	Gambe e braccia: dove si muoverà tutto il corpo 
+-	Braccia: dove si muoveranno solo le braccia
+-	Gambe: dove si muoveranno solo le gambe
+-	Testa: dove si muoverà solo la testa
+
+Alla fine di ogni periodo di tempo, verra’ scritto su un file a parte, il punteggio raggiunto dal paziente; questo file verra’ inviato al medico.
+
+In conclusione:
+I TECHNOBROS sperano che questo gioco possa regalare momenti di svago e divertimento ai pazienti, trasformando la riabilitazione in un'esperienza più leggera e motivante. Allo stesso tempo, vogliono offrire ai medici e ai terapisti uno strumento innovativo e coinvolgente, che possa supportarli nel loro prezioso lavoro, rendendo il percorso di recupero più efficace e stimolante per tutti. 
+
+I TECHNOBROS sono formati da: Bernardi Sara, Borello Gabriele, Gallello Roberto e Giordano Eric
