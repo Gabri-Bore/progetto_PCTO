@@ -467,11 +467,6 @@ while game_running:
             # Genera una nuova silhouette casuale
             random_silhouette = generate_random_silhouette()
             
-            # Ripristina il timer
-            start_time = time.time()
-            time_threshold = max(10, time_threshold - 0.5)
-
-
             # Update only the selected body part in the random silhouette
             if selected_body_part == "Gambe e braccia":
                 random_silhouette = generate_random_silhouette()
@@ -498,7 +493,7 @@ while game_running:
                                              random_silhouette["head"][1] + random.randint(-20, 20))
 
             start_time = time.time()
-            time_threshold = max(10, time_threshold - 0.5)
+            time_threshold -= 0.5
 
     # Update the display
     pygame.display.update()
