@@ -116,11 +116,77 @@ def calcola_punteggio(player_pose, silhouette):
     return int(punteggio_totale / punti_confronto)  # Media dei punteggi
 
 def draw_menu():
-    screen.fill(BLACK)
+    # Background color
+    screen.fill((20, 20, 40))  # Dark blue background
+    
+    # Draw decorative frame
+    border_width = 10
+    pygame.draw.rect(screen, WHITE, (20, 20, WIDTH-40, HEIGHT-40), border_width)
+    
+    # Title
+    title_font = pygame.font.Font(None, 120)
+    title_text = title_font.render("HOLE IN THE WALL", True, WHITE)
+    title_rect = title_text.get_rect(center=(WIDTH//2, 100))
+    
+    # Add a shadow effect to the title
+    title_shadow = title_font.render("HOLE IN THE WALL", True, BLUE)
+    shadow_rect = title_rect.copy()
+    shadow_rect.x += 4
+    shadow_rect.y += 4
+    screen.blit(title_shadow, shadow_rect)
+    screen.blit(title_text, title_rect)
+    
+    # Description
+    desc_font = pygame.font.Font(None, 36)
+    description = [
+        "Imita la sagoma bianca sullo schermo!",
+        "Scegli quale parte del corpo vuoi allenare:",
+    ]
+    
+    for i, line in enumerate(description):
+        desc_text = desc_font.render(line, True, WHITE)
+        desc_rect = desc_text.get_rect(center=(WIDTH//2, 200 + i*40))
+        screen.blit(desc_text, desc_rect)
+
+    # Button style configuration
+    button_width = 300
+    button_height = 80
+    button_spacing = 100
+    start_y = HEIGHT//2 - 100
+    
+    # Draw buttons
     for i, option in enumerate(menu_options):
-        color = GREEN if i == current_option else WHITE
-        text = font.render(option, True, color)
-        screen.blit(text, (WIDTH // 2 - text.get_width() // 2, HEIGHT // 2 - 100 + i * 100))
+        # Calculate button position
+        button_x = WIDTH//2 - button_width//2
+        button_y = start_y + i * button_spacing
+        
+        # Create button rectangle
+        button_rect = pygame.Rect(button_x, button_y, button_width, button_height)
+        
+        # Button colors based on selection
+        if i == current_option:
+            # Gradient effect for selected button
+            for offset in range(5):
+                gradient_rect = button_rect.inflate(offset*2, offset*2)
+                color = (0, 100 + offset*30, 255 - offset*30)
+                pygame.draw.rect(screen, color, gradient_rect, border_radius=20)
+            
+            # Main button
+            pygame.draw.rect(screen, (0, 150, 255), button_rect, border_radius=20)
+            pygame.draw.rect(screen, WHITE, button_rect, 3, border_radius=20)
+            text_color = WHITE
+        else:
+            # Non-selected button
+            pygame.draw.rect(screen, (60, 60, 80), button_rect, border_radius=20)
+            pygame.draw.rect(screen, (100, 100, 120), button_rect, 2, border_radius=20)
+            text_color = (200, 200, 200)
+        
+        # Draw centered text
+        text = font.render(option, True, text_color)
+        text_rect = text.get_rect(center=(button_x + button_width//2, 
+                                        button_y + button_height//2))
+        screen.blit(text, text_rect)
+    
     pygame.display.flip()
 
 def generate_random_silhouette():
